@@ -1,5 +1,5 @@
 package com.kmp.ollamechat.repository
 
-interface Repository {
+interface GenerateRepository {
     suspend fun sendPrompt(prompt: String): Result<String>
 }

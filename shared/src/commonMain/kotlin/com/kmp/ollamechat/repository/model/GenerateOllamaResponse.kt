@@ -1,10 +1,10 @@
-package com.example.chatkmpdontshareui.repository.model
+package com.kmp.ollamechat.repository.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OllamaResponse(
+data class GenerateOllamaResponse(
     val model: String? = null,
     @SerialName("created_at") val createdAt: String? = null,
     val response: String? = null,          // ← есть в JSON

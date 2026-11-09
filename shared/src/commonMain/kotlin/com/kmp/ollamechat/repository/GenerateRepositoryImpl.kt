@@ -5,16 +5,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 
-class RepositoryImpl(
+class GenerateRepositoryImpl(
     val settings: Settings,
-    val ollamaClient: OllamaClient,
+    val generateOllamaClient: GenerateOllamaClient,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
-) : Repository {
+) : GenerateRepository {
     override suspend fun sendPrompt(
         prompt: String
     ): Result<String> {
         return withContext(dispatcher) {
-            ollamaClient.sendPrompt(settings.getServerUrl(), prompt)
+            generateOllamaClient.sendPrompt(settings.getServerUrl(), prompt)
         }
     }
 }

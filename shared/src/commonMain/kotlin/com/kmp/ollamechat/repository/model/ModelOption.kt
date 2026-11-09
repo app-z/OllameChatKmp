@@ -1,4 +1,4 @@
-package com.example.chatkmpdontshareui.repository.model
+package com.kmp.ollamechat.repository.model
 
 data class ModelOption(
     val displayName: String,

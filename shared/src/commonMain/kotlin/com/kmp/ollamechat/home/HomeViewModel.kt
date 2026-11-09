@@ -1,4 +1,4 @@
-package com.kmp.ollamechat.homescreen
+package com.kmp.ollamechat.home
 
 import androidx.lifecycle.ViewModel
 

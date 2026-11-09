@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,13 +24,16 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.kmp.ollamechat.chatscreen.ChatScreen
-import com.kmp.ollamechat.chatscreen.ChatViewModel
+import com.kmp.ollamechat.chat.ChatScreen
+import com.kmp.ollamechat.chat.ChatViewModel
+import com.kmp.ollamechat.generate.GenerateScreen
+import com.kmp.ollamechat.generate.GenerateViewModel
+import com.kmp.ollamechat.home.HomeScreen
+import com.kmp.ollamechat.home.HomeViewModel
 import com.kmp.ollamechat.navigation.ChatRoute
+import com.kmp.ollamechat.navigation.GenerateRoute
 import com.kmp.ollamechat.navigation.HomeRoute
 import com.kmp.ollamechat.navigation.Route
-import com.kmp.ollamechat.homescreen.HomeScreen
-import com.kmp.ollamechat.homescreen.HomeViewModel
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.viewmodel.koinViewModel
@@ -99,6 +103,18 @@ fun RootScreen() {
                         label = { Text("Chat") },
                     )
 
+                    NavigationBarItem(
+                        selected = currentRoute is GenerateRoute,
+                        onClick = {
+                            if (currentRoute !is GenerateRoute) {
+                                backStack.clear()
+                                backStack.add(GenerateRoute)
+                            }
+                        },
+                        icon = { Icon(Icons.AutoMirrored.Filled.Message, contentDescription = null) },
+                        label = { Text("Generate") },
+                    )
+
                 }
             },
         ) { innerPadding ->
@@ -114,6 +130,10 @@ fun RootScreen() {
                     entry<HomeRoute> {
                         val vm: HomeViewModel = koinViewModel()
                         HomeScreen(vm)
+                    }
+                    entry<GenerateRoute> {
+                        val vm: GenerateViewModel = koinViewModel()
+                        GenerateScreen(vm)
                     }
                     entry<ChatRoute> {
                         val vm: ChatViewModel = koinViewModel()

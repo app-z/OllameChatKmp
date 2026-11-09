@@ -9,4 +9,7 @@ sealed interface Route : NavKey
 data object HomeRoute : Route
 
 @Serializable
+data object GenerateRoute : Route
+
+@Serializable
 data object ChatRoute : Route

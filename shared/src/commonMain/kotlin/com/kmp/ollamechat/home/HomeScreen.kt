@@ -1,4 +1,4 @@
-package com.kmp.ollamechat.homescreen
+package com.kmp.ollamechat.home
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

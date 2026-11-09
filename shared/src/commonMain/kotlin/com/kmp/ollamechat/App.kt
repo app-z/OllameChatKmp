@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.kmp.ollamechat.di.commonModule
 import com.kmp.ollamechat.di.viewModelModule
-import com.kmp.ollamechat.homescreen.HomeViewModel
+import com.kmp.ollamechat.home.HomeViewModel
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.dsl.KoinAppDeclaration

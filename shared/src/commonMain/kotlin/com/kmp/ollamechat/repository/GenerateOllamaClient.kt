@@ -1,7 +1,7 @@
 package com.kmp.ollamechat.repository
 
-import com.example.chatkmpdontshareui.repository.model.OllamaRequest
-import com.example.chatkmpdontshareui.repository.model.OllamaResponse
+import com.kmp.ollamechat.repository.model.GenerateOllamaRequest
+import com.kmp.ollamechat.repository.model.GenerateOllamaResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -9,17 +9,17 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-class OllamaClient(
+class GenerateOllamaClient(
     private val settings: Settings,
     private val client: HttpClient
 ) {
     suspend fun sendPrompt(serverUrl: String, prompt: String): Result<String> {
         return try {
-            val response: OllamaResponse = client.post("$serverUrl/api/generate") {
+            val response: GenerateOllamaResponse = client.post("$serverUrl/api/generate") {
                 contentType(ContentType.Application.Json)
                 // Вставляем объект запроса. Ktor сам его сериализует в JSON.
                 setBody(
-                    OllamaRequest(
+                    GenerateOllamaRequest(
                         model = settings.getCurrentModel().id,
                         prompt = prompt,
                         stream = false

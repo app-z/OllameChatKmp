@@ -1,4 +1,4 @@
-package com.kmp.ollamechat.chatscreen
+package com.kmp.ollamechat.generate
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.chatkmpdontshareui.viewModel.ChatUIState
 
 @Composable
-fun ChatScreen(viewModel: ChatViewModel) {
+fun GenerateScreen(viewModel: GenerateViewModel) {
     val uiState by viewModel.messages.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier
