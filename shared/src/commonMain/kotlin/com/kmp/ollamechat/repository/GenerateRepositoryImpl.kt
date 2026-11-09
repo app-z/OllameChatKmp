@@ -1,5 +1,6 @@
 package com.kmp.ollamechat.repository
 
+import com.kmp.ollamechat.client.GenerateOllamaClient
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

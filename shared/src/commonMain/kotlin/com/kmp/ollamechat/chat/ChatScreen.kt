@@ -70,12 +70,20 @@ private fun ChatScreenContent(
 
     val lastContentLen = messages.lastOrNull()?.content?.length ?: 0
     val lastThinkingLen = messages.lastOrNull()?.thinking?.length ?: 0
-    // Автоскролл к последнему сообщению при добавлении/стриминге
-    LaunchedEffect(messages.size, lastContentLen, lastThinkingLen) {
-        if (messages.isEmpty()) return@LaunchedEffect
-        listState.animateScrollToItem(messages.lastIndex)
-    }
 
+    LaunchedEffect(messages.size, lastContentLen, lastThinkingLen, isStreaming) {
+        if (messages.isEmpty()) return@LaunchedEffect
+
+        val lastIndex = messages.lastIndex
+
+        // Безопасно скроллим. Дополнительный сдвиг (например, 10000) гарантирует,
+        // что если последнее сообщение длинное, мы докрутим до его САМОГО низа.
+        listState.animateScrollToItem(
+            index = lastIndex,
+            scrollOffset = 10000
+        )
+    }
+    
     Column(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,

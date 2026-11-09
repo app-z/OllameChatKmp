@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicLong
@@ -34,7 +33,6 @@ class ChatViewModel(
     private val nextId = AtomicLong(0L)
 
     fun send(text: String) {
-        // добавляем сообщение пользователя
         val userMsg = ChatMessage(
             id = nextId.incrementAndFetch(),
             role = "user",
@@ -42,7 +40,6 @@ class ChatViewModel(
         )
         _messages.update { it + userMsg }
 
-//        // пустой assistant-пузырь, который будем наполнять токенами
         _messages.update {
             it + ChatMessage(
                 id = nextId.incrementAndFetch(),
@@ -59,20 +56,17 @@ class ChatViewModel(
                         role = "user",
                         content = text
                     )
-                ) //_messages.value.dropLast(1) // без пустого assistant
+                )
             )
-                .buffer(Channel.UNLIMITED)
                 .collect { event ->
                     when (event) {
                         is StreamOllamaEvent.Token -> _messages.update { list ->
-//                            println("VM content: '${_messages.value.lastOrNull()?.content?.take(30)}'")
                             if (list.isEmpty()) return@update list
                             val last = list.last()
                             list.dropLast(1) + last.copy(content = last.content + event.text)
                         }
 
                         is StreamOllamaEvent.Thinking -> _messages.update { list ->
-//                        delay(10.milliseconds)
                             if (list.isEmpty()) return@update list
                             val last = list.last()
                             list.dropLast(1) + last.copy(thinking = last.thinking + event.text)

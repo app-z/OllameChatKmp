@@ -2,8 +2,8 @@ package com.kmp.ollamechat.di
 
 import com.kmp.ollamechat.httpEngine
 import com.kmp.ollamechat.useCase.GenerateUseCase
-import com.kmp.ollamechat.repository.StreamOllamaClient
-import com.kmp.ollamechat.repository.GenerateOllamaClient
+import com.kmp.ollamechat.client.StreamOllamaClient
+import com.kmp.ollamechat.client.GenerateOllamaClient
 import com.kmp.ollamechat.repository.GenerateRepository
 import com.kmp.ollamechat.repository.GenerateRepositoryImpl
 import com.kmp.ollamechat.repository.Settings

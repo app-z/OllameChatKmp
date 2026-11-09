@@ -1,5 +1,6 @@
-package com.kmp.ollamechat.repository
+package com.kmp.ollamechat.client
 
+import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.repository.model.GenerateOllamaRequest
 import com.kmp.ollamechat.repository.model.GenerateOllamaResponse
 import io.ktor.client.HttpClient

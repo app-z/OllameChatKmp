@@ -1,13 +1,13 @@
 package com.kmp.ollamechat.repository
 
 import com.kmp.ollamechat.chat.ChatRequest
+import com.kmp.ollamechat.client.StreamOllamaClient
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.withContext
 
 class StreamRepositoryImpl(
     private val streamOllamaClient: StreamOllamaClient,

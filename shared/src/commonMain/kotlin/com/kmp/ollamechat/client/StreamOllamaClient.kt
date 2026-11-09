@@ -1,29 +1,21 @@
-package com.kmp.ollamechat.repository
+package com.kmp.ollamechat.client
 
 import com.kmp.ollamechat.chat.ChatRequest
 import com.kmp.ollamechat.chat.OllamaChatChunk
 import com.kmp.ollamechat.chat.OllamaChatRequest
+import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ResponseException
-import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import io.ktor.utils.io.readLine
-import io.ktor.utils.io.readLineStrict
 import io.ktor.utils.io.readUTF8Line
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.serialization.json.Json
 
 /**
@@ -65,13 +57,13 @@ class StreamOllamaClient(
                         json.decodeFromString<OllamaChatChunk>(line)
                     } catch (e: Exception) {
                         emit(StreamOllamaEvent.Error("Не удалось распарсить чанк: $line", e))
-                        return@execute
+                        break
                     }
 //                    println("RAW: $line")
 
                     chunk.error?.let {
                         emit(StreamOllamaEvent.Error(it))
-                        return@execute
+                        break
                     }
 
                     val msg = chunk.message
@@ -87,7 +79,7 @@ class StreamOllamaClient(
 
                     if (chunk.done) {
                         emit(StreamOllamaEvent.Done(chunk.evalCount))
-                        return@execute
+                        break
                     }
                 }
 
