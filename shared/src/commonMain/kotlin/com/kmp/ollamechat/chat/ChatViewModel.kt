@@ -2,15 +2,16 @@ package com.kmp.ollamechat.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kmp.ollamechat.chat.model.ChatMessage
+import com.kmp.ollamechat.chat.model.ChatRole
+import com.kmp.ollamechat.client.model.ChatRequest
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.StreamUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicLong
@@ -35,7 +36,7 @@ class ChatViewModel(
     fun send(text: String) {
         val userMsg = ChatMessage(
             id = nextId.incrementAndFetch(),
-            role = "user",
+            role = ChatRole.USER,
             content = text
         )
         _messages.update { it + userMsg }
@@ -43,21 +44,14 @@ class ChatViewModel(
         _messages.update {
             it + ChatMessage(
                 id = nextId.incrementAndFetch(),
-                role = "assistant",
+                role = ChatRole.ASSISTANT,
                 content = ""
             )
         }
         _isStreaming.value = true
 
         streamJob = viewModelScope.launch(Dispatchers.Main.immediate) {
-            streamUseCase.sendPrompt(
-                messages = listOf(
-                    ChatRequest(
-                        role = "user",
-                        content = text
-                    )
-                )
-            )
+            streamUseCase.sendPrompt(role = ChatRole.USER, content = text)
                 .collect { event ->
                     when (event) {
                         is StreamOllamaEvent.Token -> _messages.update { list ->

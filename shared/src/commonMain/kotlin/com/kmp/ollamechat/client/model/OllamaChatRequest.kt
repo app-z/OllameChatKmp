@@ -1,17 +1,7 @@
-package com.kmp.ollamechat.chat
+package com.kmp.ollamechat.client.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlin.jvm.Transient
-
-
-data class ChatMessage(
-    val id: Long,
-    val role: String,          // "system" | "user" | "assistant" | "tool"
-    val content: String,
-    val thinking: String? = null,
-    val images: List<String>? = null
-)
 
 @Serializable
 data class OllamaChatRequest(

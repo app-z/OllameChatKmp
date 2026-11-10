@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.chatkmpdontshareui.viewModel.ChatUIState
 
 @Composable
 fun GenerateScreen(viewModel: GenerateViewModel) {
@@ -30,15 +29,15 @@ fun GenerateScreen(viewModel: GenerateViewModel) {
         }
 
         when (uiState) {
-            is ChatUIState.ChatMessage -> {
-                Text(text = (uiState as ChatUIState.ChatMessage).message)
+            is GenerateUIState.GenerateMessage -> {
+                Text(text = (uiState as GenerateUIState.GenerateMessage).message)
             }
 
-            is ChatUIState.Error -> {
-                Text(text = (uiState as ChatUIState.Error).error)
+            is GenerateUIState.Error -> {
+                Text(text = (uiState as GenerateUIState.Error).error)
             }
 
-            ChatUIState.Idle -> {
+            GenerateUIState.Idle -> {
 
             }
         }

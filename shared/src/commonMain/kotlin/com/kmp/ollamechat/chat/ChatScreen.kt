@@ -40,6 +40,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kmp.ollamechat.chat.model.ChatMessage
+import com.kmp.ollamechat.chat.model.ChatRole
 
 @Composable
 fun ChatScreen(
@@ -83,7 +85,7 @@ private fun ChatScreenContent(
             scrollOffset = 10000
         )
     }
-    
+
     Column(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
@@ -112,7 +114,7 @@ private fun ChatScreenContent(
 
 @Composable
 private fun MessageBubble(message: ChatMessage) {
-    val isUser = message.role == "user"
+    val isUser = message.role == ChatRole.USER
     val bubbleColor = if (isUser) {
         MaterialTheme.colorScheme.primaryContainer
     } else {
