@@ -37,6 +37,7 @@ class ChatViewModel(
         val userMsg = ChatMessage(
             id = nextId.incrementAndFetch(),
             role = ChatRole.USER,
+            thinking = null,
             content = text
         )
         _messages.update { it + userMsg }
@@ -45,6 +46,7 @@ class ChatViewModel(
             it + ChatMessage(
                 id = nextId.incrementAndFetch(),
                 role = ChatRole.ASSISTANT,
+                thinking = "",
                 content = ""
             )
         }
