@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -78,25 +79,37 @@ fun ChatScreenContent(
     }
 }
 
+private fun finiteSequence(limit: Int): Sequence<Int> =
+    generateSequence(1) { it + 1 }.take(limit)
+
 @Composable
 @Preview
 fun ChatScreenContentPreview() {
 
+    val messages = mutableListOf<ChatMessage>()
+
+    for (i in 1 until 30 step 2) {
+        messages.add(
+                ChatMessage(
+                    id = i.toLong(),
+                    role = ChatRole.USER,          // "system" | "user" | "assistant" | "tool"
+                    content = "Gjgjhgjhg $i",
+                    thinking = null,
+                ))
+
+        messages.add(
+                ChatMessage(
+                    id = i + 1L, // !!
+                    role = ChatRole.ASSISTANT,          // "system" | "user" | "assistant" | "tool"
+                    content = "Answer $i",
+                    thinking = "Think",
+                )
+        )
+
+    }
+
     ChatScreenContent(
-        messages = listOf(
-            ChatMessage(
-                id = 1,
-                role = ChatRole.USER,          // "system" | "user" | "assistant" | "tool"
-                content = "Gjgjhgjhg",
-                thinking = null,
-            ),
-            ChatMessage(
-                id = 2, // !!
-                role = ChatRole.ASSISTANT,          // "system" | "user" | "assistant" | "tool"
-                content = "Answer",
-                thinking = "Think",
-            ),
-        ),
+        messages = messages,
         isStreaming = true,
         onSend = {},
         onStop = {}
