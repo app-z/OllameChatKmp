@@ -7,7 +7,6 @@ data class ChatMessage(
     val role: ChatRole,          // "system" | "user" | "assistant" | "tool"
     val content: String,
     val thinking: String? = null,
-    val images: List<String>? = null
 )
 
 
