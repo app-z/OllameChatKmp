@@ -11,7 +11,8 @@ fun MessagesEntity.toChatMessage(): ChatMessage {
         id = id,
         content = content,
         role = role,
-        thinking = thinking
+        thinking = thinking,
+        imagePath = imagePath
     )
 }
 
@@ -21,6 +22,7 @@ fun ChatMessage.toMessagesEntity(): MessagesEntity {
         content = content,
         role = role,
         thinking = thinking,
-        dateUtc = null // На текущий момент в ChatMessage нет поля для даты
+        dateUtc = null,
+        imagePath = imagePath
     )
 }

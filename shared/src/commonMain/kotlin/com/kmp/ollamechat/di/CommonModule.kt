@@ -15,6 +15,7 @@ import com.kmp.ollamechat.repository.StreamRepositoryImpl
 import com.kmp.ollamechat.useCase.GenerateUseCase
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
+import com.kmp.ollamechat.util.ChatImageStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.HttpTimeoutConfig
@@ -63,11 +64,12 @@ val commonModule = module {
     single<ImageRepository> { ImageRepositoryImpl(get(), get()) }
 
 
-
+    
     single<GenerateUseCase> { GenerateUseCase(get()) }
 
     single<StreamUseCase> { StreamUseCase(get()) }
 
     single<LocalUseCase> { LocalUseCase(get()) }
 
+    single { ChatImageStorage() }
 }

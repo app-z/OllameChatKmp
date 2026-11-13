@@ -12,5 +12,6 @@ data class MessagesEntity(
     @ColumnInfo(name = "content") val content: String,
     @ColumnInfo(name = "role") val role: ChatRole,          // "system" | "user" | "assistant" | "tool"
     @ColumnInfo(name = "thinking") val thinking: String? = null,
-    @ColumnInfo(name = "date_utc") val dateUtc: String? = null
+    @ColumnInfo(name = "date_utc") val dateUtc: String? = null,
+    @ColumnInfo(name = "image_path") val imagePath: String? = null
 )

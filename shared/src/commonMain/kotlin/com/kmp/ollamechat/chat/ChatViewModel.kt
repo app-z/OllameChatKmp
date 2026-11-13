@@ -8,6 +8,7 @@ import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import com.kmp.ollamechat.useCase.prepareImageForOllama
+import com.kmp.ollamechat.util.ChatImageStorage
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,8 @@ import kotlinx.coroutines.launch
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
-    private val localUseCase: LocalUseCase
+    private val localUseCase: LocalUseCase,
+    private val chatImageStorage: ChatImageStorage
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -42,27 +44,27 @@ class ChatViewModel(
     }
 
     fun send(text: String, file: PlatformFile?) {
-
-        val prompt = text
-
-//            if (text.isNullOrEmpty() && file != null) {
-//            "Опиши картинку"
-//        } else {
-//            text
-//        }
+        val prompt = if (text.isBlank() && file != null) "Опиши картинку" else text
 
         _isStreaming.value = true
         chunkList.clear()
 
         streamJob = viewModelScope.launch(Dispatchers.Main.immediate) {
+            var imageName: String? = null
+            if (file != null) {
+                imageName = chatImageStorage.saveImage(file.readBytes())
+            }
+
             localUseCase.insertMessage(
                 ChatMessage(
                     role = ChatRole.USER,
                     thinking = null,
-                    content = prompt
+                    content = prompt,
+                    imagePath = imageName
                 )
             )
 
+            // Insert Assistant Message to track stream
             val id = localUseCase.insertMessage(
                 ChatMessage(
                     role = ChatRole.ASSISTANT,

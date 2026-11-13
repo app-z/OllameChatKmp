@@ -7,7 +7,7 @@ import androidx.room.RoomDatabaseConstructor
 
 const val DB_Name = "MessagesDB"
 
-@Database(entities = [MessagesEntity::class], version = 12)
+@Database(entities = [MessagesEntity::class], version = 13)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun MessagesDao(): MessagesDao
