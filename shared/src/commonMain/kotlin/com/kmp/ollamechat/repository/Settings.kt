@@ -8,6 +8,7 @@ class Settings {
     fun getServerUrl() = url
 
     private val availableModels = listOf(
+        ModelOption("gemma4:26b", "gemma4:26b"),
         ModelOption("gemma4:e4b-mlx", "gemma4:e4b-mlx"),
         ModelOption("gemma4:12b-mlx", "gemma4:e4b-mlx"),
         ModelOption("GigaChat 3 (10B)", "ai-sage/GigaChat3-10B-A1.8B"),

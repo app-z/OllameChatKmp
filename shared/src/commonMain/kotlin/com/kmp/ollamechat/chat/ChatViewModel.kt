@@ -7,6 +7,9 @@ import com.kmp.ollamechat.client.model.ChatRole
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
+import com.kmp.ollamechat.useCase.prepareImageForOllama
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +41,15 @@ class ChatViewModel(
         }
     }
 
-    fun send(text: String) {
+    fun send(text: String, file: PlatformFile?) {
+
+        val prompt = text
+
+//            if (text.isNullOrEmpty() && file != null) {
+//            "Опиши картинку"
+//        } else {
+//            text
+//        }
 
         _isStreaming.value = true
         chunkList.clear()
@@ -48,7 +59,7 @@ class ChatViewModel(
                 ChatMessage(
                     role = ChatRole.USER,
                     thinking = null,
-                    content = text
+                    content = prompt
                 )
             )
 
@@ -62,7 +73,8 @@ class ChatViewModel(
 
             streamUseCase.sendPrompt(
                 role = ChatRole.USER,
-                content = text
+                content = prompt,
+                file?.prepareImageForOllama()
             )
                 .collect { event ->
                     when (event) {
@@ -84,7 +96,7 @@ class ChatViewModel(
                                 ChatMessage(
                                     id = id,
                                     role = ChatRole.ASSISTANT,
-                                    thinking =  chunkList.joinToString(""),
+                                    thinking = chunkList.joinToString(""),
                                     content = ""
                                 )
                             )

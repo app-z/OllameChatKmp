@@ -12,21 +12,39 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kmp.ollamechat.chat.model.ChatMessage
 import com.kmp.ollamechat.client.model.ChatRole
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 
 @Composable
 fun ChatScreenContent(
     messages: List<ChatMessage>,
     isStreaming: Boolean,
-    onSend: (String) -> Unit,
+    onSend: (String, PlatformFile?) -> Unit,
     onStop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
+
+    var pickedFile by remember { mutableStateOf<PlatformFile?>(null) }
+
+    // Готовый мультиплатформенный лаунчер
+    val launcher = rememberFilePickerLauncher(
+        type = FileKitType.Image
+    ) { file ->
+        pickedFile = file // Возвращает PlatformFile или null, если выбор отменили
+        // Чтение байтов при отправке в Ollama:
+        // val bytes: ByteArray = pickedFile.readBytes()
+    }
 
     val lastContentLen = messages.lastOrNull()?.content?.length ?: 0
     val lastThinkingLen = messages.lastOrNull()?.thinking?.length ?: 0
@@ -47,9 +65,17 @@ fun ChatScreenContent(
     Scaffold(
         bottomBar = {
             ChatInputBar(
+                attachedFile = pickedFile,
                 isStreaming = isStreaming,
-                onSend = onSend,
-                onStop = onStop
+                onSend = { text ->
+                    onSend(text, pickedFile)
+                },
+                onStop = onStop, {
+                    launcher.launch()
+                },
+                onRemoveAttachment = {
+                    pickedFile = null
+                }
             )
         }
     ) { paddingValues ->
@@ -111,7 +137,9 @@ fun ChatScreenContentPreview() {
     ChatScreenContent(
         messages = messages,
         isStreaming = true,
-        onSend = {},
+        onSend = { string, file ->
+
+        },
         onStop = {}
     )
 }

@@ -79,6 +79,9 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
 
+            implementation(libs.coil.compose) // Актуальная версия Coil 3
+            implementation(libs.filekit.coil) // Модуль интеграции с FileKit
+
             commonMain.dependencies {
                 implementation(libs.filekit.core) // проверьте последнюю версию на GitHub
                 implementation(libs.filekit.dialogs.compose)
