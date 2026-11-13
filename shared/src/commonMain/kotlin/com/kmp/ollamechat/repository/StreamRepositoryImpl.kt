@@ -1,7 +1,7 @@
 package com.kmp.ollamechat.repository
 
-import com.kmp.ollamechat.client.model.ChatRequest
 import com.kmp.ollamechat.client.StreamOllamaClient
+import com.kmp.ollamechat.client.model.OllamaMessage
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -14,10 +14,10 @@ class StreamRepositoryImpl(
     private val settings: Settings,
     val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : StreamRepository {
-    override fun sendPrompt(chatRequests: List<ChatRequest>): Flow<StreamOllamaEvent> {
+    override fun sendPrompt(ollamaMessages: List<OllamaMessage>): Flow<StreamOllamaEvent> {
             return streamOllamaClient.streamChat(
                 serverUrl = settings.getServerUrl(),
-                chatRequests = chatRequests,
+                ollamaMessages = ollamaMessages,
                 modelId = settings.getCurrentModel().id
             ).flowOn(dispatcher)
     }

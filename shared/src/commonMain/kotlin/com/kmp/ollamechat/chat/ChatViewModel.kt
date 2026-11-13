@@ -3,8 +3,7 @@ package com.kmp.ollamechat.chat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessage
-import com.kmp.ollamechat.chat.model.ChatRole
-import com.kmp.ollamechat.client.model.ChatRequest
+import com.kmp.ollamechat.client.model.ChatRole
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
@@ -15,11 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.concurrent.atomics.AtomicLong
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
-import kotlin.concurrent.atomics.incrementAndFetch
 
-@OptIn(ExperimentalAtomicApi::class)
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
     private val localUseCase: LocalUseCase
@@ -41,7 +36,6 @@ class ChatViewModel(
                 _messages.emit(chatMessages)
             }
         }
-
     }
 
     fun send(text: String) {

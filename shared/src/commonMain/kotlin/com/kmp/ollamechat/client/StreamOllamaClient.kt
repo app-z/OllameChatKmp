@@ -1,8 +1,8 @@
 package com.kmp.ollamechat.client
 
-import com.kmp.ollamechat.client.model.ChatRequest
 import com.kmp.ollamechat.client.model.OllamaChatChunk
 import com.kmp.ollamechat.client.model.OllamaChatRequest
+import com.kmp.ollamechat.client.model.OllamaMessage
 import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import io.ktor.client.HttpClient
@@ -30,7 +30,7 @@ class StreamOllamaClient(
 ) {
     fun streamChat(
         serverUrl: String,
-        chatRequests: List<ChatRequest>,
+        ollamaMessages: List<OllamaMessage>,
         modelId: String,
     ): Flow<StreamOllamaEvent> = flow {
         // Переменная для отслеживания финального статуса: SUCCESS, ERROR или PREMATURE_CLOSE
@@ -42,7 +42,7 @@ class StreamOllamaClient(
                 setBody(
                     OllamaChatRequest(
                         model = modelId,
-                        messages = chatRequests,
+                        messages = ollamaMessages,
                         keepAlive = "10m",
                         stream = true
                     )

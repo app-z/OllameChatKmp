@@ -19,6 +19,8 @@ dependencies {
 
     implementation(libs.timber)
 
+    implementation(libs.filekit.dialogs) // или filekit-dialogs-compose
+
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
 }

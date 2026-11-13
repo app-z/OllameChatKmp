@@ -79,6 +79,11 @@ kotlin {
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
 
+            commonMain.dependencies {
+                implementation(libs.filekit.core) // проверьте последнюю версию на GitHub
+                implementation(libs.filekit.dialogs.compose)
+            }
+
 
         }
         iosMain.dependencies {

@@ -12,12 +12,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kmp.ollamechat.chat.model.ChatMessage
-import com.kmp.ollamechat.chat.model.ChatRole
+import com.kmp.ollamechat.client.model.ChatRole
 
 @Composable
 fun ChatScreenContent(
@@ -90,20 +89,21 @@ fun ChatScreenContentPreview() {
 
     for (i in 1 until 30 step 2) {
         messages.add(
-                ChatMessage(
-                    id = i.toLong(),
-                    role = ChatRole.USER,          // "system" | "user" | "assistant" | "tool"
-                    content = "Gjgjhgjhg $i",
-                    thinking = null,
-                ))
+            ChatMessage(
+                id = i.toLong(),
+                role = ChatRole.USER,          // "system" | "user" | "assistant" | "tool"
+                content = "Gjgjhgjhg $i",
+                thinking = null,
+            )
+        )
 
         messages.add(
-                ChatMessage(
-                    id = i + 1L, // !!
-                    role = ChatRole.ASSISTANT,          // "system" | "user" | "assistant" | "tool"
-                    content = "Answer $i",
-                    thinking = "Think",
-                )
+            ChatMessage(
+                id = i + 1L, // !!
+                role = ChatRole.ASSISTANT,          // "system" | "user" | "assistant" | "tool"
+                content = "Answer $i",
+                thinking = "Think",
+            )
         )
 
     }

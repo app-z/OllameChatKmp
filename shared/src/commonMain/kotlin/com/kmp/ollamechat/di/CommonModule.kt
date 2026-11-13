@@ -5,12 +5,15 @@ import com.kmp.ollamechat.client.StreamOllamaClient
 import com.kmp.ollamechat.httpEngine
 import com.kmp.ollamechat.repository.GenerateRepository
 import com.kmp.ollamechat.repository.GenerateRepositoryImpl
+import com.kmp.ollamechat.repository.ImageRepository
+import com.kmp.ollamechat.repository.ImageRepositoryImpl
 import com.kmp.ollamechat.repository.LocalRepository
 import com.kmp.ollamechat.repository.LocalRepositoryImpl
 import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.repository.StreamRepository
 import com.kmp.ollamechat.repository.StreamRepositoryImpl
 import com.kmp.ollamechat.useCase.GenerateUseCase
+import com.kmp.ollamechat.useCase.ImageUseCase
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import io.ktor.client.HttpClient
@@ -58,9 +61,15 @@ val commonModule = module {
 
     single<StreamRepository> { StreamRepositoryImpl(get(), get()) }
 
+    single<ImageRepository> { ImageRepositoryImpl(get(), get()) }
+
+
+    
     single<GenerateUseCase> { GenerateUseCase(get()) }
 
     single<StreamUseCase> { StreamUseCase(get()) }
 
     single<LocalUseCase> { LocalUseCase(get()) }
+
+    single<ImageUseCase> { ImageUseCase(get()) }
 }

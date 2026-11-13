@@ -16,8 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.kmp.ollamechat.chat.model.ChatMessage
-import com.kmp.ollamechat.chat.model.ChatRole
-import kotlin.text.ifEmpty
+import com.kmp.ollamechat.client.model.ChatRole
 
 @Composable
 fun MessageBubble(message: ChatMessage) {
