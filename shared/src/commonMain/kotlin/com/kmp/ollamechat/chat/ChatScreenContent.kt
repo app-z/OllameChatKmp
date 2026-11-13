@@ -1,5 +1,7 @@
 package com.kmp.ollamechat.chat
 
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,29 +40,59 @@ fun ChatScreenContent(
 
     var pickedFile by remember { mutableStateOf<PlatformFile?>(null) }
 
+    //-------------------------------------------------------------------------
+    // Флаг разрешения автоскролла
+    var isAutoScrollEnabled by remember { mutableStateOf(true) }
+
+
+    // 1. Останавливаем автоскролл, как только пользователь нажал на список или начал свайп
+    LaunchedEffect(listState.interactionSource) {
+        listState.interactionSource.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Press || interaction is DragInteraction.Start) {
+                isAutoScrollEnabled = false
+            }
+        }
+    }
+
+    // 2. Если пользователь сам докрутил список до самого низа — снова включаем автоскролл
+    val isAtBottom by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+            lastVisibleItem != null &&
+                    lastVisibleItem.index == layoutInfo.totalItemsCount - 1 &&
+                    lastVisibleItem.offset + lastVisibleItem.size <= layoutInfo.viewportEndOffset + 20
+        }
+    }
+
+    LaunchedEffect(isAtBottom) {
+        if (isAtBottom && !listState.isScrollInProgress) {
+            isAutoScrollEnabled = true
+        }
+    }
+
+    //------------------------------------------------------------------------
+
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image
     ) { file ->
         pickedFile = file
-        // Чтение байтов при отправке в Ollama:
-        // val bytes: ByteArray = pickedFile.readBytes()
     }
 
     val lastContentLen = messages.lastOrNull()?.content?.length ?: 0
     val lastThinkingLen = messages.lastOrNull()?.thinking?.length ?: 0
 
+    // 3. Скроллим ТОЛЬКО если isAutoScrollEnabled == true
     LaunchedEffect(messages.size, lastContentLen, lastThinkingLen, isStreaming) {
-        if (messages.isEmpty()) return@LaunchedEffect
+        if (messages.isEmpty() || !isAutoScrollEnabled) return@LaunchedEffect
 
-        val lastIndex = messages.lastIndex
-
-        // Безопасно скроллим. Дополнительный сдвиг (например, 10000) гарантирует,
-        // что если последнее сообщение длинное, мы докрутим до его САМОГО низа.
-        listState.animateScrollToItem(
-            index = lastIndex,
+        // Используем scrollToItem, чтобы плавная анимация не перехватывала управление у пальца
+        listState.scrollToItem(
+            index = messages.lastIndex,
             scrollOffset = 10000
         )
     }
+
 
     Scaffold(
         bottomBar = {
@@ -67,6 +100,7 @@ fun ChatScreenContent(
                 attachedFile = pickedFile,
                 isStreaming = isStreaming,
                 onSend = { text ->
+                    isAutoScrollEnabled = true
                     onSend(text, pickedFile)
                     pickedFile = null
                 },
@@ -79,26 +113,17 @@ fun ChatScreenContent(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = modifier
+        // 2 ЧАСТЬ: Центральная область со списком сообщений
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(messages, key = { message ->
-                    message.id
-                }) { msg ->
-                    MessageBubble(msg)
-                }
-
-                if (isStreaming && messages.lastOrNull()?.content.isNullOrEmpty()) {
-                    item { TypingIndicator() }
-                }
+            items(messages, key = { message -> message.id }) { msg ->
+                MessageBubble(msg)
             }
         }
     }

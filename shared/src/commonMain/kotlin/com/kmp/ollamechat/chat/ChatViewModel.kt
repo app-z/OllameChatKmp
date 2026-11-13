@@ -30,9 +30,6 @@ class ChatViewModel(
 
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
-
-    val chunkList = mutableListOf<String>()
-
     private var streamJob: Job? = null
 
     init {
@@ -47,7 +44,6 @@ class ChatViewModel(
         val prompt = if (text.isBlank() && file != null) "Опиши картинку" else text
 
         _isStreaming.value = true
-        chunkList.clear()
 
         streamJob = viewModelScope.launch(Dispatchers.Main.immediate) {
             var imageName: String? = null
@@ -64,7 +60,6 @@ class ChatViewModel(
                 )
             )
 
-            // Insert Assistant Message to track stream
             val id = localUseCase.insertMessage(
                 ChatMessage(
                     role = ChatRole.ASSISTANT,
@@ -72,6 +67,9 @@ class ChatViewModel(
                     content = ""
                 )
             )
+
+            val thinkingBuilder = StringBuilder()
+            val contentBuilder = StringBuilder()
 
             streamUseCase.sendPrompt(
                 role = ChatRole.USER,
@@ -81,29 +79,27 @@ class ChatViewModel(
                 .collect { event ->
                     when (event) {
                         is StreamOllamaEvent.Token -> {
-                            chunkList.add(event.text)
+                            contentBuilder.append(event.text)
                             localUseCase.updateMessage(
                                 ChatMessage(
                                     id = id,
                                     role = ChatRole.ASSISTANT,
-                                    thinking = null,
-                                    content = chunkList.joinToString("")
+                                    thinking = thinkingBuilder.toString(),
+                                    content = contentBuilder.toString()
                                 )
                             )
                         }
 
                         is StreamOllamaEvent.Thinking -> {
-                            chunkList.add(event.text)
+                            thinkingBuilder.append(event.text)
                             localUseCase.updateMessage(
                                 ChatMessage(
                                     id = id,
                                     role = ChatRole.ASSISTANT,
-                                    thinking = chunkList.joinToString(""),
-                                    content = ""
-                                )
+                                    thinking = thinkingBuilder.toString().ifEmpty { null },
+                                    content = contentBuilder.toString()                                )
                             )
                         }
-
 
                         is StreamOllamaEvent.Error -> {
                             _isStreaming.value = false
