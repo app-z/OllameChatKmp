@@ -1,14 +1,17 @@
 package com.kmp.ollamechat.di
 
-import com.kmp.ollamechat.httpEngine
-import com.kmp.ollamechat.useCase.GenerateUseCase
-import com.kmp.ollamechat.client.StreamOllamaClient
 import com.kmp.ollamechat.client.GenerateOllamaClient
+import com.kmp.ollamechat.client.StreamOllamaClient
+import com.kmp.ollamechat.httpEngine
 import com.kmp.ollamechat.repository.GenerateRepository
 import com.kmp.ollamechat.repository.GenerateRepositoryImpl
+import com.kmp.ollamechat.repository.LocalRepository
+import com.kmp.ollamechat.repository.LocalRepositoryImpl
 import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.repository.StreamRepository
 import com.kmp.ollamechat.repository.StreamRepositoryImpl
+import com.kmp.ollamechat.useCase.GenerateUseCase
+import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
@@ -41,7 +44,6 @@ val commonModule = module {
         }
     }
 
-
     single {
         Json { ignoreUnknownKeys = true; isLenient = true }
     }
@@ -52,9 +54,13 @@ val commonModule = module {
 
     single<GenerateRepository> { GenerateRepositoryImpl(get(), get()) }
 
+    single<LocalRepository> { LocalRepositoryImpl(get()) }
+
     single<StreamRepository> { StreamRepositoryImpl(get(), get()) }
 
     single<GenerateUseCase> { GenerateUseCase(get()) }
 
     single<StreamUseCase> { StreamUseCase(get()) }
+
+    single<LocalUseCase> { LocalUseCase(get()) }
 }

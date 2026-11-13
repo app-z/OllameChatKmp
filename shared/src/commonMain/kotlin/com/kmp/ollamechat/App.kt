@@ -3,6 +3,7 @@ package com.kmp.ollamechat
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.kmp.ollamechat.di.commonDatabaseModule
 import com.kmp.ollamechat.di.commonModule
 import com.kmp.ollamechat.di.viewModelModule
 import com.kmp.ollamechat.home.HomeViewModel
@@ -19,7 +20,8 @@ fun App(
     KoinApplication(configuration = koinConfiguration {
         modules(
             viewModelModule,
-            commonModule
+            commonModule,
+            commonDatabaseModule
         )
     }) {
         val homeViewModel = koinViewModel<HomeViewModel>()

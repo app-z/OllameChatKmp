@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -19,29 +20,30 @@ kotlin {
         }
     }
     android {
-       namespace = "com.kmp.ollamechat.shared"
-       compileSdk = libs.versions.android.compileSdk.get().toInt()
-       minSdk = libs.versions.android.minSdk.get().toInt()
-       compilerOptions {
-           jvmTarget = JvmTarget.JVM_11
-       }
-       androidResources {
-           enable = true
-       }
-       withHostTest {
-           isIncludeAndroidResources = true
-       }
-       withDeviceTestBuilder {
-           sourceSetTreeName = "test"
-       }.configure {
-           instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-       }
+        namespace = "com.kmp.ollamechat.shared"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
+        }
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
+        }
+        withDeviceTestBuilder {
+            sourceSetTreeName = "test"
+        }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        }
     }
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.compose.uiTooling)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.timber)
         }
 
         commonMain.dependencies {
@@ -74,6 +76,10 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
 //            implementation(libs.kotlinx.serialization.json)
 
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
+
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -88,6 +94,17 @@ kotlin {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
+
+    add("kspAndroid", libs.androidx.room.compiler)
+
+       // Для iOS-таргетов (оставьте те, которые объявлены у вас в kotlin { ... })
+       add("kspIosArm64", libs.androidx.room.compiler)
+       add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+
     androidRuntimeClasspath(libs.compose.uiTooling)
 }

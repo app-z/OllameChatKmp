@@ -14,8 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun GenerateScreen(viewModel: GenerateViewModel) {
-    val uiState by viewModel.messages.collectAsStateWithLifecycle()
+fun GenerateScreen(
+    viewModel: GenerateViewModel
+) {
+
+    val uiState by viewModel.messagesUiState.collectAsStateWithLifecycle()
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)

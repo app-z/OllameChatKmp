@@ -6,6 +6,7 @@ import com.kmp.ollamechat.chat.model.ChatMessage
 import com.kmp.ollamechat.chat.model.ChatRole
 import com.kmp.ollamechat.client.model.ChatRequest
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
+import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -20,7 +21,8 @@ import kotlin.concurrent.atomics.incrementAndFetch
 
 @OptIn(ExperimentalAtomicApi::class)
 class ChatViewModel(
-    private val streamUseCase: StreamUseCase
+    private val streamUseCase: StreamUseCase,
+    private val localUseCase: LocalUseCase
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -29,44 +31,71 @@ class ChatViewModel(
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
 
+    val chunkList = mutableListOf<String>()
+
     private var streamJob: Job? = null
 
-    private val nextId = AtomicLong(0L)
+    init {
+        viewModelScope.launch {
+            localUseCase.observeMessages().collect { chatMessages ->
+                _messages.emit(chatMessages)
+            }
+        }
+
+    }
 
     fun send(text: String) {
-        val userMsg = ChatMessage(
-            id = nextId.incrementAndFetch(),
-            role = ChatRole.USER,
-            thinking = null,
-            content = text
-        )
-        _messages.update { it + userMsg }
 
-        _messages.update {
-            it + ChatMessage(
-                id = nextId.incrementAndFetch(),
-                role = ChatRole.ASSISTANT,
-                thinking = "",
-                content = ""
-            )
-        }
         _isStreaming.value = true
+        chunkList.clear()
 
         streamJob = viewModelScope.launch(Dispatchers.Main.immediate) {
-            streamUseCase.sendPrompt(role = ChatRole.USER, content = text)
+            localUseCase.insertMessage(
+                ChatMessage(
+                    role = ChatRole.USER,
+                    thinking = null,
+                    content = text
+                )
+            )
+
+            val id = localUseCase.insertMessage(
+                ChatMessage(
+                    role = ChatRole.ASSISTANT,
+                    thinking = null,
+                    content = ""
+                )
+            )
+
+            streamUseCase.sendPrompt(
+                role = ChatRole.USER,
+                content = text
+            )
                 .collect { event ->
                     when (event) {
-                        is StreamOllamaEvent.Token -> _messages.update { list ->
-                            if (list.isEmpty()) return@update list
-                            val last = list.last()
-                            list.dropLast(1) + last.copy(content = last.content + event.text)
+                        is StreamOllamaEvent.Token -> {
+                            chunkList.add(event.text)
+                            localUseCase.updateMessage(
+                                ChatMessage(
+                                    id = id,
+                                    role = ChatRole.ASSISTANT,
+                                    thinking = null,
+                                    content = chunkList.joinToString("")
+                                )
+                            )
                         }
 
-                        is StreamOllamaEvent.Thinking -> _messages.update { list ->
-                            if (list.isEmpty()) return@update list
-                            val last = list.last()
-                            list.dropLast(1) + last.copy(thinking = last.thinking + event.text)
+                        is StreamOllamaEvent.Thinking -> {
+                            chunkList.add(event.text)
+                            localUseCase.updateMessage(
+                                ChatMessage(
+                                    id = id,
+                                    role = ChatRole.ASSISTANT,
+                                    thinking =  chunkList.joinToString(""),
+                                    content = ""
+                                )
+                            )
                         }
+
 
                         is StreamOllamaEvent.Error -> {
                             _isStreaming.value = false
@@ -77,7 +106,9 @@ class ChatViewModel(
                             }
                         }
 
-                        is StreamOllamaEvent.Done -> _isStreaming.value = false
+                        is StreamOllamaEvent.Done -> {
+                            _isStreaming.value = false
+                        }
                     }
 
                 }
