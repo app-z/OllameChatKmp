@@ -28,7 +28,7 @@ import org.koin.compose.koinInject
 @Composable
 fun MessageBubble(message: ChatMessage) {
 
-    val imageStorage =  koinInject<ChatImageStorage>()
+    val imageStorage = koinInject<ChatImageStorage>()
 
     val imageFile = remember(message.imagePath) {
         imageStorage.getImageFile(message.imagePath)
@@ -79,7 +79,8 @@ fun MessageBubble(message: ChatMessage) {
                             .heightIn(max = 240.dp)
                             .clip(RoundedCornerShape(12.dp))
                     )
-                }            }
+                }
+            }
         }
     }
 }

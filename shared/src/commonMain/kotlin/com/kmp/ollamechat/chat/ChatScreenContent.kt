@@ -37,11 +37,10 @@ fun ChatScreenContent(
 
     var pickedFile by remember { mutableStateOf<PlatformFile?>(null) }
 
-    // Готовый мультиплатформенный лаунчер
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image
     ) { file ->
-        pickedFile = file // Возвращает PlatformFile или null, если выбор отменили
+        pickedFile = file
         // Чтение байтов при отправке в Ollama:
         // val bytes: ByteArray = pickedFile.readBytes()
     }
@@ -69,6 +68,7 @@ fun ChatScreenContent(
                 isStreaming = isStreaming,
                 onSend = { text ->
                     onSend(text, pickedFile)
+                    pickedFile = null
                 },
                 onStop = onStop, {
                     launcher.launch()
@@ -103,9 +103,6 @@ fun ChatScreenContent(
         }
     }
 }
-
-private fun finiteSequence(limit: Int): Sequence<Int> =
-    generateSequence(1) { it + 1 }.take(limit)
 
 @Composable
 @Preview
