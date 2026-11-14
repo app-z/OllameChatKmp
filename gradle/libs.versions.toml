@@ -15,7 +15,7 @@ composeMultiplatform = "1.12.2"
 filekitCore = "0.17.0"
 junit = "4.13.2"
 
-kotlin = "2.3.20"
+kotlin = "2.4.20"
 ksp = "2.3.12"
 timber = "5.0.1"
 

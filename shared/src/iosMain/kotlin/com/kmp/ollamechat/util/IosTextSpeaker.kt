@@ -10,7 +10,7 @@ class IosTextSpeaker : TextSpeaker {
     private val synthesizer = AVSpeechSynthesizer()
 
     override fun speak(text: String, flush: Boolean) {
-        val cleanText = String.leanMarkdown()
+        val cleanText = text.leanMarkdown()
         if (cleanText.isBlank()) return
 
         if (flush && synthesizer.isSpeaking()) {
