@@ -36,19 +36,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.kmp.ollamechat.chat.model.ChatMessage
+import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.util.ChatImageStorage
-import org.koin.compose.koinInject
 
 @Composable
-fun MessageBubble(message: ChatMessage) {
-
-    val imageStorage = koinInject<ChatImageStorage>()
-
-    val imageFile = remember(message.imagePath) {
-        imageStorage.getImageFile(message.imagePath)
-    }
+fun MessageBubble(message: ChatMessageUi) {
 
     val isUser = message.role == ChatRole.USER
     val bubbleColor = if (isUser) {
@@ -102,7 +94,7 @@ fun MessageBubble(message: ChatMessage) {
                     style = MaterialTheme.typography.bodyLarge
                 )
 
-                imageFile?.let { file ->
+                message.imageFile?.let { file ->
                     Spacer(Modifier.height(6.dp))
                     AsyncImage(
                         model = file,

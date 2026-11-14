@@ -1,15 +1,14 @@
 package com.kmp.ollamechat.repository
 
-import com.kmp.ollamechat.chat.model.ChatMessage
-import com.kmp.ollamechat.database.MessagesEntity
+import com.kmp.ollamechat.chat.model.ChatMessageDto
 import kotlinx.coroutines.flow.Flow
 
 interface LocalRepository{
-    suspend fun updateMessage(chatMessage: ChatMessage)
+    suspend fun updateMessage(chatMessageDto: ChatMessageDto)
 
-    suspend fun getMessages(): List<ChatMessage>
+    suspend fun getMessages(): List<ChatMessageDto>
 
-    fun observeMessages() : Flow<List<ChatMessage>>
+    fun observeMessages() : Flow<List<ChatMessageDto>>
 
-    suspend fun insertMessage(message: ChatMessage): Long
+    suspend fun insertMessage(message: ChatMessageDto): Long
 }

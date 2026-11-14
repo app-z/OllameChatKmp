@@ -2,7 +2,7 @@ package com.kmp.ollamechat.generate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kmp.ollamechat.chat.model.ChatMessage
+import com.kmp.ollamechat.chat.model.ChatMessageDto
 import com.kmp.ollamechat.client.model.ChatRole
 import com.kmp.ollamechat.useCase.GenerateUseCase
 import com.kmp.ollamechat.useCase.LocalUseCase
@@ -38,7 +38,7 @@ class GenerateViewModel(
             generateUseCase.sendPrompt(text)
                 .onSuccess { result ->
                     localUseCase.insertMessage(
-                        ChatMessage(
+                        ChatMessageDto(
                             content = result,
                             thinking = "",
                             role = ChatRole.ASSISTANT

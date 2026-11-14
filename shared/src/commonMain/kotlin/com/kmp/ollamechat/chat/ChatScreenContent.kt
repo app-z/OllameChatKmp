@@ -1,77 +1,70 @@
 package com.kmp.ollamechat.chat
 
-import androidx.compose.foundation.interaction.DragInteraction
-import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.kmp.ollamechat.chat.model.ChatMessage
-import com.kmp.ollamechat.client.model.ChatRole
+import com.kmp.ollamechat.chat.model.ChatMessageUi
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreenContent(
-    messages: List<ChatMessage>,
+    messages: List<ChatMessageUi>,
     isStreaming: Boolean,
     onSend: (String, PlatformFile?) -> Unit,
     onStop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-
+    val scope = rememberCoroutineScope()
     var pickedFile by remember { mutableStateOf<PlatformFile?>(null) }
 
-    //-------------------------------------------------------------------------
     // Флаг разрешения автоскролла
     var isAutoScrollEnabled by remember { mutableStateOf(true) }
 
-
-    // 1. Останавливаем автоскролл, как только пользователь нажал на список или начал свайп
-    LaunchedEffect(listState.interactionSource) {
-        listState.interactionSource.interactions.collect { interaction ->
-            if (interaction is PressInteraction.Press || interaction is DragInteraction.Start) {
-                isAutoScrollEnabled = false
-            }
-        }
+    val canScrollForward by remember {
+        derivedStateOf { listState.canScrollForward }
     }
 
-    // 2. Если пользователь сам докрутил список до самого низа — снова включаем автоскролл
-    val isAtBottom by remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-            lastVisibleItem != null &&
-                    lastVisibleItem.index == layoutInfo.totalItemsCount - 1 &&
-                    lastVisibleItem.offset + lastVisibleItem.size <= layoutInfo.viewportEndOffset + 20
-        }
-    }
-
-    LaunchedEffect(isAtBottom) {
-        if (isAtBottom && !listState.isScrollInProgress) {
+    // Возобновляем автоскролл, когда пользователь сам докрутил вниз и отпустил палец
+    LaunchedEffect(canScrollForward, listState.isScrollInProgress) {
+        if (!canScrollForward && !listState.isScrollInProgress) {
             isAutoScrollEnabled = true
         }
     }
-
-    //------------------------------------------------------------------------
 
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image
@@ -82,17 +75,15 @@ fun ChatScreenContent(
     val lastContentLen = messages.lastOrNull()?.content?.length ?: 0
     val lastThinkingLen = messages.lastOrNull()?.thinking?.length ?: 0
 
-    // 3. Скроллим ТОЛЬКО если isAutoScrollEnabled == true
+    // Скроллим вниз при новых токенах, ТОЛЬКО если автоскролл включен
     LaunchedEffect(messages.size, lastContentLen, lastThinkingLen, isStreaming) {
         if (messages.isEmpty() || !isAutoScrollEnabled) return@LaunchedEffect
 
-        // Используем scrollToItem, чтобы плавная анимация не перехватывала управление у пальца
         listState.scrollToItem(
             index = messages.lastIndex,
             scrollOffset = 10000
         )
     }
-
 
     Scaffold(
         bottomBar = {
@@ -104,7 +95,8 @@ fun ChatScreenContent(
                     onSend(text, pickedFile)
                     pickedFile = null
                 },
-                onStop = onStop, {
+                onStop = onStop,
+                onAttach = {
                     launcher.launch()
                 },
                 onRemoveAttachment = {
@@ -113,55 +105,59 @@ fun ChatScreenContent(
             )
         }
     ) { paddingValues ->
-        // 2 ЧАСТЬ: Центральная область со списком сообщений
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
+        // Оборачиваем список в Box, чтобы разместить кнопку поверх в правом нижнем углу
+        Box(
+            modifier = modifier
                 .padding(paddingValues)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .fillMaxSize()
         ) {
-            items(messages, key = { message -> message.id }) { msg ->
-                MessageBubble(msg)
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        awaitEachGesture {
+                            awaitFirstDown(requireUnconsumed = false)
+                            isAutoScrollEnabled = false
+                        }
+                    },
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(messages, key = { message -> message.id }) { msg ->
+                    MessageBubble(msg)
+                }
+            }
+
+            // Плавающая кнопка возврата в самый низ чата
+            AnimatedVisibility(
+                visible = !isAutoScrollEnabled && messages.isNotEmpty(),
+                enter = fadeIn() + scaleIn(),
+                exit = fadeOut() + scaleOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                SmallFloatingActionButton(
+                    onClick = {
+                        isAutoScrollEnabled = true
+                        scope.launch {
+                            listState.animateScrollToItem(
+                                index = messages.lastIndex,
+                                scrollOffset = 10000
+                            )
+                        }
+                    },
+                    shape = CircleShape,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "В конец чата"
+                    )
+                }
             }
         }
     }
-}
-
-@Composable
-@Preview
-fun ChatScreenContentPreview() {
-
-    val messages = mutableListOf<ChatMessage>()
-
-    for (i in 1 until 30 step 2) {
-        messages.add(
-            ChatMessage(
-                id = i.toLong(),
-                role = ChatRole.USER,          // "system" | "user" | "assistant" | "tool"
-                content = "Gjgjhgjhg $i",
-                thinking = null,
-            )
-        )
-
-        messages.add(
-            ChatMessage(
-                id = i + 1L, // !!
-                role = ChatRole.ASSISTANT,          // "system" | "user" | "assistant" | "tool"
-                content = "Answer $i",
-                thinking = "Think",
-            )
-        )
-
-    }
-
-    ChatScreenContent(
-        messages = messages,
-        isStreaming = true,
-        onSend = { string, file ->
-
-        },
-        onStop = {}
-    )
 }

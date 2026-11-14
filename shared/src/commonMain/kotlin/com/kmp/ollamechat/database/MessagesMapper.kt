@@ -1,13 +1,13 @@
 package com.kmp.ollamechat.database
 
-import com.kmp.ollamechat.chat.model.ChatMessage
+import com.kmp.ollamechat.chat.model.ChatMessageDto
 
 /**
  * Маппинг между сущностью БД и доменной моделью.
  */
 
-fun MessagesEntity.toChatMessage(): ChatMessage {
-    return ChatMessage(
+fun MessagesEntity.toChatMessage(): ChatMessageDto {
+    return ChatMessageDto(
         id = id,
         content = content,
         role = role,
@@ -16,7 +16,7 @@ fun MessagesEntity.toChatMessage(): ChatMessage {
     )
 }
 
-fun ChatMessage.toMessagesEntity(): MessagesEntity {
+fun ChatMessageDto.toMessagesEntity(): MessagesEntity {
     return MessagesEntity(
         id = id,
         content = content,

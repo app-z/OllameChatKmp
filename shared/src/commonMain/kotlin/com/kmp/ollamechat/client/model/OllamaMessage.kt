@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class OllamaMessage(
     val role: ChatRole,
     val content: String,
-    val thinking: String? = null, // Для моделей с режимом рассуждений (например, DeepSeek-R1 или Gemma 4)
+    val thinking: String? = null,
     val images: List<String>? = null
 )

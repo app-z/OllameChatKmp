@@ -1,8 +1,10 @@
 package com.kmp.ollamechat.chat
 
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kmp.ollamechat.chat.model.ChatMessage
+import com.kmp.ollamechat.chat.model.ChatMessageDto
+import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.client.model.ChatRole
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.LocalUseCase
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
@@ -25,8 +28,8 @@ class ChatViewModel(
     private val chatImageStorage: ChatImageStorage
 ) : ViewModel() {
 
-    private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
-    val messages: StateFlow<List<ChatMessage>> = _messages.asStateFlow()
+    private val _messages = MutableStateFlow<List<ChatMessageUi>>(emptyList())
+    val messages: StateFlow<List<ChatMessageUi>> = _messages.asStateFlow()
 
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
@@ -35,7 +38,18 @@ class ChatViewModel(
     init {
         viewModelScope.launch {
             localUseCase.observeMessages().collect { chatMessages ->
-                _messages.emit(chatMessages)
+                val chatMessageUi =
+                    chatMessages.map { item ->
+                        ChatMessageUi(
+                            id = item.id,
+                            role = item.role,
+                            content = item.content,
+                            thinking = item.thinking,
+                            imageFile = chatImageStorage.getImageFile(item.imagePath)
+                        )
+                    }
+
+                _messages.emit(chatMessageUi)
             }
         }
     }
@@ -52,7 +66,7 @@ class ChatViewModel(
             }
 
             localUseCase.insertMessage(
-                ChatMessage(
+                ChatMessageDto(
                     role = ChatRole.USER,
                     thinking = null,
                     content = prompt,
@@ -61,7 +75,7 @@ class ChatViewModel(
             )
 
             val id = localUseCase.insertMessage(
-                ChatMessage(
+                ChatMessageDto(
                     role = ChatRole.ASSISTANT,
                     thinking = null,
                     content = ""
@@ -81,7 +95,7 @@ class ChatViewModel(
                         is StreamOllamaEvent.Token -> {
                             contentBuilder.append(event.text)
                             localUseCase.updateMessage(
-                                ChatMessage(
+                                ChatMessageDto(
                                     id = id,
                                     role = ChatRole.ASSISTANT,
                                     thinking = thinkingBuilder.toString(),
@@ -93,11 +107,12 @@ class ChatViewModel(
                         is StreamOllamaEvent.Thinking -> {
                             thinkingBuilder.append(event.text)
                             localUseCase.updateMessage(
-                                ChatMessage(
+                                ChatMessageDto(
                                     id = id,
                                     role = ChatRole.ASSISTANT,
                                     thinking = thinkingBuilder.toString().ifEmpty { null },
-                                    content = contentBuilder.toString()                                )
+                                    content = contentBuilder.toString()
+                                )
                             )
                         }
 
