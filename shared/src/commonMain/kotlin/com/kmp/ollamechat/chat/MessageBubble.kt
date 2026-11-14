@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.client.model.ChatRole
+import com.kmp.ollamechat.util.toBoldAnnotatedString
 
 @Composable
 fun MessageBubble(
@@ -95,9 +96,13 @@ fun MessageBubble(
                 }
 
                 Text(
-                    text = message.content.ifEmpty { "…" },
+                    text = message.content.toBoldAnnotatedString(),
                     style = MaterialTheme.typography.bodyLarge
                 )
+
+                if(message.content.isEmpty() && message.thinking.isNullOrEmpty()){
+                    TypingIndicator()
+                }
 
                 message.imageFile?.let { file ->
                     Spacer(Modifier.height(6.dp))

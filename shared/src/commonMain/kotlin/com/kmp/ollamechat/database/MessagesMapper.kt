@@ -22,7 +22,6 @@ fun ChatMessageDto.toMessagesEntity(): MessagesEntity {
         content = content,
         role = role,
         thinking = thinking,
-        dateUtc = null,
         imagePath = imagePath
     )
 }

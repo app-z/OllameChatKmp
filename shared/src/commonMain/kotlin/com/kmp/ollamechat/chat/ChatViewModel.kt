@@ -1,6 +1,5 @@
 package com.kmp.ollamechat.chat
 
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageDto
@@ -19,9 +18,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
@@ -35,6 +32,8 @@ class ChatViewModel(
 
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
+
+    private val _isSpeaking = MutableStateFlow(false)
     private var streamJob: Job? = null
 
     init {
@@ -120,11 +119,12 @@ class ChatViewModel(
 
                         is StreamOllamaEvent.Error -> {
                             _isStreaming.value = false
-                            _messages.update { list ->
-                                if (list.isEmpty()) return@update list
-                                val last = list.last()
-                                list.dropLast(1) + last.copy(content = last.content + "\n[ошибка: ${event.message}]")
-                            }
+                            localUseCase.insertMessage(
+                                ChatMessageDto(
+                                    role = ChatRole.SYSTEM,
+                                    content = "Ошибка: ${event.message}"
+                                )
+                            )
                         }
 
                         is StreamOllamaEvent.Done -> {
@@ -137,8 +137,14 @@ class ChatViewModel(
     }
 
     fun speak(tts: String) {
-        textSpeaker.speak(tts)
+        _isSpeaking.value = !_isSpeaking.value
+        if (_isSpeaking.value) {
+            textSpeaker.speak(tts)
+        } else {
+            textSpeaker.stop()
+        }
     }
+
     fun stop() {
         streamJob?.cancel()   // отмена Flow → закрытие соединения → стоп генерации
         _isStreaming.value = false
@@ -146,6 +152,7 @@ class ChatViewModel(
 
     override fun onCleared() {
         streamJob?.cancel()
+        textSpeaker.shutdown()
         super.onCleared()
     }
 }
