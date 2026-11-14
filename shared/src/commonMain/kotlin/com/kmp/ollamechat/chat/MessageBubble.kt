@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,7 +42,10 @@ import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.client.model.ChatRole
 
 @Composable
-fun MessageBubble(message: ChatMessageUi) {
+fun MessageBubble(
+    message: ChatMessageUi,
+    onSpeak: (String) -> Unit
+) {
 
     val isUser = message.role == ChatRole.USER
     val bubbleColor = if (isUser) {
@@ -106,6 +111,23 @@ fun MessageBubble(message: ChatMessageUi) {
                             .clip(RoundedCornerShape(12.dp))
                     )
                 }
+
+                if (!isUser && message.content.isNotEmpty()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = { onSpeak(message.content) },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.VolumeUp,
+                                contentDescription = "Озвучить ответ",
+                                modifier = Modifier.size(18.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
             }
         }
     }

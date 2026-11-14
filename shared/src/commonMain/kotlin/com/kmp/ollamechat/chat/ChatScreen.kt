@@ -18,6 +18,7 @@ fun ChatScreen(
         isStreaming = isStreaming,
         onSend = viewModel::send,
         onStop = viewModel::stop,
+        onSpeak = viewModel::speak,
         modifier = modifier
     )
 }

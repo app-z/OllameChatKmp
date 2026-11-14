@@ -46,6 +46,7 @@ fun ChatScreenContent(
     isStreaming: Boolean,
     onSend: (String, PlatformFile?) -> Unit,
     onStop: () -> Unit,
+    onSpeak: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -125,7 +126,7 @@ fun ChatScreenContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(messages, key = { message -> message.id }) { msg ->
-                    MessageBubble(msg)
+                    MessageBubble(msg, onSpeak = onSpeak)
                 }
             }
 

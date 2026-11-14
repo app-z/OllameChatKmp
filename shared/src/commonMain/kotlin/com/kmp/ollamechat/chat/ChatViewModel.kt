@@ -11,6 +11,7 @@ import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import com.kmp.ollamechat.useCase.prepareImageForOllama
 import com.kmp.ollamechat.util.ChatImageStorage
+import com.kmp.ollamechat.util.TextSpeaker
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +26,8 @@ import org.koin.compose.koinInject
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
     private val localUseCase: LocalUseCase,
-    private val chatImageStorage: ChatImageStorage
+    private val chatImageStorage: ChatImageStorage,
+    private val textSpeaker: TextSpeaker
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessageUi>>(emptyList())
@@ -134,6 +136,9 @@ class ChatViewModel(
         }
     }
 
+    fun speak(tts: String) {
+        textSpeaker.speak(tts)
+    }
     fun stop() {
         streamJob?.cancel()   // отмена Flow → закрытие соединения → стоп генерации
         _isStreaming.value = false

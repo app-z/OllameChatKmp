@@ -9,6 +9,7 @@ import com.kmp.ollamechat.di.commonDatabaseModule
 import com.kmp.ollamechat.di.commonModule
 import com.kmp.ollamechat.di.viewModelModule
 import com.kmp.ollamechat.home.HomeViewModel
+import com.kmp.ollamechat.util.platformModule
 import io.github.vinceglb.filekit.coil.addPlatformFileSupport
 import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
@@ -32,6 +33,7 @@ fun App(
     KoinApplication(configuration = koinConfiguration {
         appDeclaration()
         modules(
+            platformModule,
             viewModelModule,
             commonModule,
             commonDatabaseModule
