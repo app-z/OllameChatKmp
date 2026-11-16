@@ -10,6 +10,7 @@ import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import com.kmp.ollamechat.useCase.prepareImageForOllama
 import com.kmp.ollamechat.util.ChatImageStorage
+import com.kmp.ollamechat.util.Logger
 import com.kmp.ollamechat.util.TextSpeaker
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
@@ -125,6 +126,7 @@ class ChatViewModel(
                                     content = "Ошибка: ${event.message}"
                                 )
                             )
+                            Logger.d( event.message)
                         }
 
                         is StreamOllamaEvent.Done -> {
