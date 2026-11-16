@@ -5,10 +5,13 @@ import com.kmp.ollamechat.repository.model.ModelOption
 class Settings {
     private val url = "http://192.168.1.215:11434"
 
+//    private val url = "http://192.168.1.216:11434"
+
     fun getServerUrl() = url
 
     private val availableModels = listOf(
         ModelOption("gemma4:26b", "gemma4:26b"),
+        ModelOption("gemma4-fast:latest", "gemma4-fast:latest"),
         ModelOption("gemma4:e4b-mlx", "gemma4:e4b-mlx"),
         ModelOption("gemma4:12b-mlx", "gemma4:e4b-mlx"),
         ModelOption("GigaChat 3 (10B)", "ai-sage/GigaChat3-10B-A1.8B"),
