@@ -125,8 +125,12 @@ fun ChatScreenContent(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(messages, key = { message -> message.id }) { msg ->
-                    MessageBubble(msg, onSpeak = onSpeak)
+                items(messages, key = { message -> message.id }) { message ->
+                    MessageBubble(
+                        message = message,
+                        isStreaming = isStreaming,
+                        onSpeak = onSpeak
+                    )
                 }
             }
 

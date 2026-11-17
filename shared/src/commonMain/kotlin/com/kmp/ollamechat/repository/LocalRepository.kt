@@ -10,5 +10,5 @@ interface LocalRepository{
 
     fun observeMessages() : Flow<List<ChatMessageDto>>
 
-    suspend fun insertMessage(message: ChatMessageDto): Long
+    suspend fun insertMessage(chatMessageDto: ChatMessageDto): Long
 }

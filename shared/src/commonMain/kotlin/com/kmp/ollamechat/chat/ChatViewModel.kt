@@ -19,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 
 class ChatViewModel(
@@ -39,9 +40,10 @@ class ChatViewModel(
 
     init {
         viewModelScope.launch {
-            localUseCase.observeMessages().collect { chatMessages ->
-                val chatMessageUi =
-                    chatMessages.map { item ->
+            localUseCase.observeMessages()
+                .conflate()
+                .collect { chatMessages ->
+                    val chatMessageUi = chatMessages.map { item ->
                         ChatMessageUi(
                             id = item.id,
                             role = item.role,
@@ -51,8 +53,8 @@ class ChatViewModel(
                         )
                     }
 
-                _messages.emit(chatMessageUi)
-            }
+                    _messages.emit(chatMessageUi)
+                }
         }
     }
 
@@ -126,7 +128,7 @@ class ChatViewModel(
                                     content = "Ошибка: ${event.message}"
                                 )
                             )
-                            Logger.d( event.message)
+                            Logger.d(event.message)
                         }
 
                         is StreamOllamaEvent.Done -> {

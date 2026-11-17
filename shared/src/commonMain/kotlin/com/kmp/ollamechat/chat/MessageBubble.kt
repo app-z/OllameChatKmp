@@ -37,7 +37,8 @@ import com.kmp.ollamechat.util.toBoldAnnotatedString
 @Composable
 fun MessageBubble(
     message: ChatMessageUi,
-    onSpeak: (String) -> Unit
+    onSpeak: (String) -> Unit,
+    isStreaming: Boolean
 ) {
 
     val isUser = message.role == ChatRole.USER
@@ -79,7 +80,7 @@ fun MessageBubble(
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 if (!message.thinking.isNullOrEmpty()) {
                     ThinkingSection(
-                        thinking = message.thinking,
+                        thinking = message.thinking ?: "",
                         isExpanded = isThinkingExpanded,
                         isThinkingInProgress = !hasContent,
                         onToggle = { isThinkingExpanded = !isThinkingExpanded }
@@ -87,12 +88,14 @@ fun MessageBubble(
                     Spacer(Modifier.height(6.dp))
                 }
 
-                Text(
-                    text = message.content.toBoldAnnotatedString(),
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                if (message.content.isNotEmpty()) {
+                    Text(
+                        text = message.content.toBoldAnnotatedString(),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
 
-                if(message.content.isEmpty() && message.thinking.isNullOrEmpty()){
+                if (message.content.isEmpty() && message.thinking.isNullOrEmpty()) {
                     TypingIndicator()
                 }
 
@@ -109,10 +112,10 @@ fun MessageBubble(
                     )
                 }
 
-                if (!isUser && message.content.isNotEmpty()) {
+                if (!isUser && message.content.isNotEmpty() && !isStreaming) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(
-                            onClick = { onSpeak(message.content) },
+                            onClick = remember(message.id) { { onSpeak(message.content) } },
                             modifier = Modifier.size(28.dp)
                         ) {
                             Icon(
