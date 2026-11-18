@@ -58,9 +58,13 @@ fun ChatScreenContent(
         derivedStateOf { listState.canScrollForward }
     }
 
+    val isScrollInProgress by remember{
+        derivedStateOf { listState.isScrollInProgress }
+    }
+
     // Возобновляем автоскролл, когда пользователь сам докрутил вниз и отпустил палец
-    LaunchedEffect(canScrollForward, listState.isScrollInProgress) {
-        if (!canScrollForward && !listState.isScrollInProgress) {
+    LaunchedEffect(canScrollForward, isScrollInProgress) {
+        if (!canScrollForward && !isScrollInProgress) {
             isAutoScrollEnabled = true
         }
     }
@@ -85,6 +89,7 @@ fun ChatScreenContent(
     }
 
     Scaffold(
+        modifier = modifier,
         bottomBar = {
             ChatInputBar(
                 attachedFile = pickedFile,
