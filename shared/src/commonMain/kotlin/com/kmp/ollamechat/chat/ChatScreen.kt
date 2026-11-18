@@ -10,8 +10,10 @@ fun ChatScreen(
     viewModel: ChatViewModel,
     modifier: Modifier = Modifier
 ) {
-    val messages by viewModel.messages.collectAsStateWithLifecycle()
+//    val messages by viewModel.messages.collectAsStateWithLifecycle()
     val isStreaming by viewModel.isStreaming.collectAsStateWithLifecycle()
+
+    val messages by viewModel.messagesFlow.collectAsStateWithLifecycle()
 
     ChatScreenContent(
         messages = messages,

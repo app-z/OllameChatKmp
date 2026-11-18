@@ -42,12 +42,12 @@ import io.github.vinceglb.filekit.name
 
 @Composable
 fun ChatInputBar(
-    attachedFile: PlatformFile?, // Передаем прикрепленный файл (null, если не выбран)
+    attachedFile: PlatformFile?,
     isStreaming: Boolean,
     onSend: (String) -> Unit,
     onStop: () -> Unit,
     onAttach: () -> Unit,
-    onRemoveAttachment: () -> Unit // Колбэк для удаления файла по нажатию на крестик
+    onRemoveAttachment: () -> Unit
 ) {
     var text by rememberSaveable { mutableStateOf("") }
 

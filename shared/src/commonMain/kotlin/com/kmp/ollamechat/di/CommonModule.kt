@@ -1,5 +1,6 @@
 package com.kmp.ollamechat.di
 
+import com.kmp.ollamechat.chat.MessageUpdateStrategy
 import com.kmp.ollamechat.client.GenerateOllamaClient
 import com.kmp.ollamechat.client.StreamOllamaClient
 import com.kmp.ollamechat.httpEngine
@@ -16,7 +17,6 @@ import com.kmp.ollamechat.useCase.GenerateUseCase
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import com.kmp.ollamechat.util.ChatImageStorage
-import com.kmp.ollamechat.util.TextSpeaker
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.HttpTimeoutConfig
@@ -73,6 +73,8 @@ val commonModule = module {
     single<LocalUseCase> { LocalUseCase(get()) }
 
     single { ChatImageStorage() }
+
+    single { MessageUpdateStrategy(get(), get()) }
 
 
 }

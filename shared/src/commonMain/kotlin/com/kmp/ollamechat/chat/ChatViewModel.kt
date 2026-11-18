@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageDto
 import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
@@ -17,51 +16,76 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.time.TimeSource
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
     private val localUseCase: LocalUseCase,
     private val chatImageStorage: ChatImageStorage,
+    private val messageUpdateStrategy: MessageUpdateStrategy,
     private val textSpeaker: TextSpeaker,
-    private val settings: Settings
 ) : ViewModel() {
-
-    private val _messages = MutableStateFlow<List<ChatMessageUi>>(emptyList())
-    val messages: StateFlow<List<ChatMessageUi>> = _messages.asStateFlow()
-
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
 
     private val _isSpeaking = MutableStateFlow(false)
     private var streamJob: Job? = null
 
-    init {
-        viewModelScope.launch {
-            localUseCase.observeMessages()
-                .conflate()
-                .collect { chatMessages ->
-                    val chatMessageUi = chatMessages.map { item ->
-                        ChatMessageUi(
-                            id = item.id,
-                            role = item.role,
-                            content = item.content,
-                            thinking = item.thinking,
-                            imageFile = chatImageStorage.getImageFile(item.imagePath)
-                        )
-                    }
+    private val _currentMessage = MutableSharedFlow<ChatMessageDto?>(replay = 1)
+    val currentMessage = _currentMessage.asSharedFlow()
 
-                    _messages.emit(chatMessageUi)
-                }
+    // Выносим маппинг истории из БД, чтобы не пересчитывать картинки на каждый токен
+    private val dbMessagesFlow: Flow<List<ChatMessageUi>> = localUseCase.observeMessages()
+        .map { db ->
+            db.map { item ->
+                ChatMessageUi(
+                    id = item.id,
+                    role = item.role,
+                    content = item.content,
+                    thinking = item.thinking,
+                    imageFile = chatImageStorage.getImageFile(item.imagePath)
+                )
+            }
         }
-    }
+
+    val messagesFlow: StateFlow<List<ChatMessageUi>> = combine(
+        dbMessagesFlow
+            .conflate(),
+        currentMessage
+            .conflate()
+            .onStart {
+                emit(null) // start emit list because of combine
+            }
+    ) { dbUi, current ->
+        if (current == null) {
+            dbUi
+        } else {
+            val currentUi = ChatMessageUi(
+                id = current.id,
+                role = current.role,
+                content = current.content,
+                thinking = current.thinking,
+                imageFile = chatImageStorage.getImageFile(current.imagePath)
+            )
+            dbUi.filterNot { it.id == currentUi.id } + currentUi
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     fun send(text: String, file: PlatformFile?) {
         val prompt = if (text.isBlank() && file != null) "Опиши картинку" else text
@@ -97,6 +121,7 @@ class ChatViewModel(
         }
     }
 
+
     private suspend fun streamAssistantResponse(
         messageId: Long,
         prompt: String,
@@ -104,8 +129,6 @@ class ChatViewModel(
     ) {
         val thinkingBuilder = StringBuilder()
         val contentBuilder = StringBuilder()
-        val timeSource = TimeSource.Monotonic
-        var lastSaveMark = timeSource.markNow()
 
         try {
             streamUseCase.sendPrompt(
@@ -116,18 +139,24 @@ class ChatViewModel(
                 when (event) {
                     is StreamOllamaEvent.Token -> {
                         contentBuilder.append(event.text)
-                        if (lastSaveMark.elapsedNow() >= settings.getIntervalForSaveMessageToDb()) {
-                            lastSaveMark = timeSource.markNow()
-                            saveToDb(messageId, thinkingBuilder, contentBuilder)
-                        }
+
+                        messageUpdateStrategy.updateMessage(
+                            messageId = messageId,
+                            contentBuilder = contentBuilder,
+                            thinkingBuilder = thinkingBuilder,
+                            currentMessage = _currentMessage
+                        )
                     }
 
                     is StreamOllamaEvent.Thinking -> {
                         thinkingBuilder.append(event.text)
-                        if (lastSaveMark.elapsedNow() >= settings.getIntervalForSaveMessageToDb()) {
-                            lastSaveMark = timeSource.markNow()
-                            saveToDb(messageId, thinkingBuilder, contentBuilder)
-                        }
+
+                        messageUpdateStrategy.updateMessage(
+                            messageId = messageId,
+                            contentBuilder = contentBuilder,
+                            thinkingBuilder = thinkingBuilder,
+                            currentMessage = _currentMessage
+                        )
                     }
 
                     is StreamOllamaEvent.Error -> {
@@ -145,26 +174,12 @@ class ChatViewModel(
             }
         } finally {
             _isStreaming.value = false
-            // Save last word
-            withContext(NonCancellable) {
-                saveToDb(messageId, thinkingBuilder, contentBuilder)
-            }
-        }
-    }
-
-    private suspend fun saveToDb(
-        id: Long,
-        thinkingBuilder: StringBuilder,
-        contentBuilder: StringBuilder
-    ) {
-        localUseCase.updateMessage(
-            ChatMessageDto(
-                id = id,
-                role = ChatRole.ASSISTANT,
-                thinking = thinkingBuilder.toString().ifEmpty { null },
-                content = contentBuilder.toString()
+            messageUpdateStrategy.saveLastWordToDb(
+                messageId = messageId,
+                contentBuilder = contentBuilder,
+                thinkingBuilder = thinkingBuilder,
             )
-        )
+        }
     }
 
     fun speak(tts: String) {

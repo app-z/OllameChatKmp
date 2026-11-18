@@ -87,8 +87,9 @@ fun ChatScreenContent(
                 attachedFile = pickedFile,
                 isStreaming = isStreaming,
                 onSend = { text ->
+                    val fileToSend = pickedFile
                     isAutoScrollEnabled = true
-                    onSend(text, pickedFile)
+                    onSend(text, fileToSend)
                     pickedFile = null
                 },
                 onStop = onStop,
