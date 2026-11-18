@@ -8,7 +8,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -82,7 +80,7 @@ fun ChatScreenContent(
 
         listState.scrollToItem(
             index = messages.lastIndex,
-            scrollOffset = 10000
+            scrollOffset = Int.MAX_VALUE
         )
     }
 
@@ -104,44 +102,12 @@ fun ChatScreenContent(
                     pickedFile = null
                 }
             )
-        }
-    ) { paddingValues ->
-        // Оборачиваем список в Box, чтобы разместить кнопку поверх в правом нижнем углу
-        Box(
-            modifier = modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        ) {
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        awaitEachGesture {
-                            awaitFirstDown(requireUnconsumed = false)
-                            isAutoScrollEnabled = false
-                        }
-                    },
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(messages, key = { message -> message.id }) { message ->
-                    MessageBubble(
-                        message = message,
-                        isStreaming = isStreaming,
-                        onSpeak = onSpeak
-                    )
-                }
-            }
-
-            // Плавающая кнопка возврата в самый низ чата
+        },
+        floatingActionButton = {
             AnimatedVisibility(
                 visible = !isAutoScrollEnabled && messages.isNotEmpty(),
                 enter = fadeIn() + scaleIn(),
-                exit = fadeOut() + scaleOut(),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(16.dp)
+                exit = fadeOut() + scaleOut()
             ) {
                 SmallFloatingActionButton(
                     onClick = {
@@ -164,5 +130,30 @@ fun ChatScreenContent(
                 }
             }
         }
+    ) { paddingValues ->
+        // Box больше не нужен — передаем paddingValues напрямую в LazyColumn
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        isAutoScrollEnabled = false
+                    }
+                },
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(messages, key = { message -> message.id }) { message ->
+                MessageBubble(
+                    message = message,
+                    isStreaming = isStreaming,
+                    onSpeak = onSpeak
+                )
+            }
+        }
     }
 }
+
