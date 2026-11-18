@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.TimeSource
 
 class ChatViewModel(
@@ -117,7 +116,7 @@ class ChatViewModel(
                 when (event) {
                     is StreamOllamaEvent.Token -> {
                         contentBuilder.append(event.text)
-                        if (lastSaveMark.elapsedNow() >= settings.getSaveMessageToDbInterval()) {
+                        if (lastSaveMark.elapsedNow() >= settings.getIntervalForSaveMessageToDb()) {
                             lastSaveMark = timeSource.markNow()
                             saveToDb(messageId, thinkingBuilder, contentBuilder)
                         }
@@ -125,7 +124,7 @@ class ChatViewModel(
 
                     is StreamOllamaEvent.Thinking -> {
                         thinkingBuilder.append(event.text)
-                        if (lastSaveMark.elapsedNow() >= settings.getSaveMessageToDbInterval()) {
+                        if (lastSaveMark.elapsedNow() >= settings.getIntervalForSaveMessageToDb()) {
                             lastSaveMark = timeSource.markNow()
                             saveToDb(messageId, thinkingBuilder, contentBuilder)
                         }

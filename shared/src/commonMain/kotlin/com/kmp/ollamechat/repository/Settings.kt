@@ -30,6 +30,6 @@ class Settings {
 
     fun getCurrentModel() = currentModel
 
-    fun getSaveMessageToDbInterval() = 250.milliseconds
+    fun getIntervalForSaveMessageToDb() = 250.milliseconds
 
 }

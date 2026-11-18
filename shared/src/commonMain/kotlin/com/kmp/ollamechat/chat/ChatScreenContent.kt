@@ -51,22 +51,15 @@ fun ChatScreenContent(
     val scope = rememberCoroutineScope()
     var pickedFile by remember { mutableStateOf<PlatformFile?>(null) }
 
-    // Флаг разрешения автоскролла
     var isAutoScrollEnabled by remember { mutableStateOf(true) }
 
-    val canScrollForward by remember {
-        derivedStateOf { listState.canScrollForward }
+    val isAtBottomAndIdle by remember {
+        derivedStateOf { !listState.canScrollForward && !listState.isScrollInProgress }
     }
 
-    val isScrollInProgress by remember{
-        derivedStateOf { listState.isScrollInProgress }
-    }
-
-    // Возобновляем автоскролл, когда пользователь сам докрутил вниз и отпустил палец
-    LaunchedEffect(canScrollForward, isScrollInProgress) {
-        if (!canScrollForward && !isScrollInProgress) {
+    LaunchedEffect(isAtBottomAndIdle) {
+        if (isAtBottomAndIdle)
             isAutoScrollEnabled = true
-        }
     }
 
     val launcher = rememberFilePickerLauncher(
@@ -78,7 +71,6 @@ fun ChatScreenContent(
     val lastContentLen = messages.lastOrNull()?.content?.length ?: 0
     val lastThinkingLen = messages.lastOrNull()?.thinking?.length ?: 0
 
-    // Скроллим вниз при новых токенах, ТОЛЬКО если автоскролл включен
     LaunchedEffect(messages.size, lastContentLen, lastThinkingLen, isStreaming) {
         if (messages.isEmpty() || !isAutoScrollEnabled) return@LaunchedEffect
 
@@ -120,7 +112,7 @@ fun ChatScreenContent(
                         scope.launch {
                             listState.animateScrollToItem(
                                 index = messages.lastIndex,
-                                scrollOffset = 10000
+                                scrollOffset = Int.MAX_VALUE
                             )
                         }
                     },
@@ -136,7 +128,6 @@ fun ChatScreenContent(
             }
         }
     ) { paddingValues ->
-        // Box больше не нужен — передаем paddingValues напрямую в LazyColumn
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -161,4 +152,3 @@ fun ChatScreenContent(
         }
     }
 }
-
