@@ -88,10 +88,8 @@ kotlin {
             implementation(libs.coil.compose) // Актуальная версия Coil 3
             implementation(libs.filekit.coil) // Модуль интеграции с FileKit
 
-            commonMain.dependencies {
-                implementation(libs.filekit.core) // проверьте последнюю версию на GitHub
-                implementation(libs.filekit.dialogs.compose)
-            }
+            implementation(libs.filekit.core) // проверьте последнюю версию на GitHub
+            implementation(libs.filekit.dialogs.compose)
 
 
         }
@@ -116,9 +114,9 @@ dependencies {
 
     add("kspAndroid", libs.androidx.room.compiler)
 
-       // Для iOS-таргетов (оставьте те, которые объявлены у вас в kotlin { ... })
-       add("kspIosArm64", libs.androidx.room.compiler)
-       add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    // Для iOS-таргетов (оставьте те, которые объявлены у вас в kotlin { ... })
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
