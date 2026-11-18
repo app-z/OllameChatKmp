@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageDto
 import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.client.model.ChatRole
+import com.kmp.ollamechat.database.toChatMessageUi
 import com.kmp.ollamechat.repository.model.StreamOllamaEvent
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
@@ -17,11 +18,9 @@ import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
@@ -43,10 +42,6 @@ class ChatViewModel(
     private val _isSpeaking = MutableStateFlow(false)
     private var streamJob: Job? = null
 
-    private val _currentMessage = MutableSharedFlow<ChatMessageDto?>(replay = 1)
-    val currentMessage = _currentMessage.asSharedFlow()
-
-    // Выносим маппинг истории из БД, чтобы не пересчитывать картинки на каждый токен
     private val dbMessagesFlow: Flow<List<ChatMessageUi>> = localUseCase.observeMessages()
         .map { db ->
             db.map { item ->
@@ -63,7 +58,7 @@ class ChatViewModel(
     val messagesFlow: StateFlow<List<ChatMessageUi>> = combine(
         dbMessagesFlow
             .conflate(),
-        currentMessage
+        messageUpdateStrategy.currentMessage
             .conflate()
             .onStart {
                 emit(null) // start emit list because of combine
@@ -72,11 +67,7 @@ class ChatViewModel(
         if (current == null) {
             dbUi
         } else {
-            val currentUi = ChatMessageUi(
-                id = current.id,
-                role = current.role,
-                content = current.content,
-                thinking = current.thinking,
+            val currentUi = current.toChatMessageUi().copy(
                 imageFile = chatImageStorage.getImageFile(current.imagePath)
             )
             dbUi.filterNot { it.id == currentUi.id } + currentUi
@@ -92,6 +83,7 @@ class ChatViewModel(
 
         streamJob?.cancel()
         _isStreaming.value = true
+        messageUpdateStrategy.clean()
 
         streamJob = viewModelScope.launch(Dispatchers.Main.immediate) {
             val imageName = file?.let { chatImageStorage.saveImage(it.readBytes()) }
@@ -127,8 +119,6 @@ class ChatViewModel(
         prompt: String,
         file: PlatformFile?
     ) {
-        val thinkingBuilder = StringBuilder()
-        val contentBuilder = StringBuilder()
 
         try {
             streamUseCase.sendPrompt(
@@ -138,24 +128,18 @@ class ChatViewModel(
             ).collect { event ->
                 when (event) {
                     is StreamOllamaEvent.Token -> {
-                        contentBuilder.append(event.text)
 
-                        messageUpdateStrategy.updateMessage(
+                        messageUpdateStrategy.updateContent(
                             messageId = messageId,
-                            contentBuilder = contentBuilder,
-                            thinkingBuilder = thinkingBuilder,
-                            currentMessage = _currentMessage
+                            content = event.text
                         )
                     }
 
                     is StreamOllamaEvent.Thinking -> {
-                        thinkingBuilder.append(event.text)
 
-                        messageUpdateStrategy.updateMessage(
+                        messageUpdateStrategy.updateThinking(
                             messageId = messageId,
-                            contentBuilder = contentBuilder,
-                            thinkingBuilder = thinkingBuilder,
-                            currentMessage = _currentMessage
+                            thinking = event.text
                         )
                     }
 
@@ -174,10 +158,8 @@ class ChatViewModel(
             }
         } finally {
             _isStreaming.value = false
-            messageUpdateStrategy.saveLastWordToDb(
-                messageId = messageId,
-                contentBuilder = contentBuilder,
-                thinkingBuilder = thinkingBuilder,
+            messageUpdateStrategy.saveLastWordToDbAndClean(
+                messageId = messageId
             )
         }
     }

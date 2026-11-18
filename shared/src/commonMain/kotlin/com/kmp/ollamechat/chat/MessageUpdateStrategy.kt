@@ -6,6 +6,7 @@ import com.kmp.ollamechat.repository.Settings
 import com.kmp.ollamechat.useCase.LocalUseCase
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.withContext
 import kotlin.time.TimeSource
 
@@ -20,14 +21,31 @@ class MessageUpdateStrategy(
     private val timeSource = TimeSource.Monotonic
     private var lastSaveMark = timeSource.markNow()
 
-    suspend fun updateMessage(
+    private val _currentMessage = MutableSharedFlow<ChatMessageDto?>(replay = 1)
+    val currentMessage = _currentMessage.asSharedFlow()
+
+    val thinkingBuilder = StringBuilder()
+    val contentBuilder = StringBuilder()
+
+    suspend fun updateContent(
         messageId: Long,
-        thinkingBuilder: StringBuilder,
-        contentBuilder: StringBuilder,
-        currentMessage: MutableSharedFlow<ChatMessageDto?>
+        content: String
     ) {
+        contentBuilder.append(content)
+        updateMessage(messageId)
+    }
 
+    suspend fun updateThinking(
+        messageId: Long,
+        thinking: String
+    ) {
+        thinkingBuilder.append(thinking)
+        updateMessage(messageId)
+    }
 
+    private suspend fun updateMessage(
+        messageId: Long
+    ) {
         when (strategy) {
             StrategyType.DIRECTLY_TO_DB -> {
                 if (lastSaveMark.elapsedNow() >= settings.getIntervalForSaveMessageToDb()) {
@@ -37,7 +55,7 @@ class MessageUpdateStrategy(
             }
 
             StrategyType.AS_FLOW -> {
-                currentMessage.emit(
+                _currentMessage.emit(
                     ChatMessageDto(
                         id = messageId,
                         role = ChatRole.ASSISTANT,
@@ -50,16 +68,20 @@ class MessageUpdateStrategy(
         }
     }
 
-    suspend fun saveLastWordToDb(
-        messageId: Long,
-        thinkingBuilder: StringBuilder,
-        contentBuilder: StringBuilder
+    suspend fun saveLastWordToDbAndClean(
+        messageId: Long
     ) {
         // Save last word
         withContext(NonCancellable) {
             saveToDb(messageId, thinkingBuilder, contentBuilder)
         }
 
+        clean()
+    }
+
+    fun clean() {
+        thinkingBuilder.clear()
+        contentBuilder.clear()
     }
 
     private suspend fun saveToDb(

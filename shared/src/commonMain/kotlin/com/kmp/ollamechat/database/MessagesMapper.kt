@@ -1,6 +1,7 @@
 package com.kmp.ollamechat.database
 
 import com.kmp.ollamechat.chat.model.ChatMessageDto
+import com.kmp.ollamechat.chat.model.ChatMessageUi
 
 /**
  * Маппинг между сущностью БД и доменной моделью.
@@ -23,5 +24,15 @@ fun ChatMessageDto.toMessagesEntity(): MessagesEntity {
         role = role,
         thinking = thinking,
         imagePath = imagePath
+    )
+}
+
+fun ChatMessageDto.toChatMessageUi(): ChatMessageUi {
+    return ChatMessageUi(
+        id = id,
+        role = role,
+        content = content,
+        thinking = thinking,
+        imageFile = null
     )
 }
