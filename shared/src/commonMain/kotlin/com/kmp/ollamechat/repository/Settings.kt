@@ -1,6 +1,7 @@
 package com.kmp.ollamechat.repository
 
 import com.kmp.ollamechat.repository.model.ModelOption
+import kotlin.time.Duration.Companion.milliseconds
 
 class Settings {
     private val url = "http://192.168.1.215:11434"
@@ -28,5 +29,7 @@ class Settings {
     private var currentModel = getAvailableModels().first()
 
     fun getCurrentModel() = currentModel
+
+    fun getSaveMessageToDbInterval() = 250.milliseconds
 
 }
