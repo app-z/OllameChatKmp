@@ -10,7 +10,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kmp.ollamechat.chat.model.ChatMessageUi
+import com.kmp.ollamechat.client.model.ChatRole
 import ollamechat.shared.generated.resources.Res
 import ollamechat.shared.generated.resources.chat
 import org.jetbrains.compose.resources.stringResource
@@ -55,4 +58,30 @@ fun ChatScreen(
     }
 }
 
-
+@Composable
+@Preview
+fun ChatScreenContentPreview() {
+    ChatScreenContent(
+        messages = listOf(
+            ChatMessageUi(
+                id = 1,
+                role = ChatRole.USER,
+                content = "Как дела?",
+                thinking = "",
+                imageFile = null
+            ),
+            ChatMessageUi(
+                id = 2,
+                role = ChatRole.ASSISTANT,
+                content = "Хорошо",
+                thinking = "Что он спросил?",
+                imageFile = null
+            )
+        ),
+        isStreaming = true,
+        onSend = { _, _ -> },
+        onStop = {},
+        onSpeak = {},
+        modifier = Modifier
+    )
+}

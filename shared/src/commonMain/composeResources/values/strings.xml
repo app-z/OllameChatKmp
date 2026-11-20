@@ -2,4 +2,5 @@
     <string name="home">Home</string>
     <string name="chat">Chat</string>
     <string name="generate">Generate</string>
+    <string name="describe_picture">Опиши картинку"</string>
 </resources>

@@ -28,6 +28,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ollamechat.shared.generated.resources.Res
+import ollamechat.shared.generated.resources.describe_picture
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
@@ -79,13 +83,15 @@ class ChatViewModel(
     )
 
     fun send(text: String, file: PlatformFile?) {
-        val prompt = if (text.isBlank() && file != null) "Опиши картинку" else text
 
         streamJob?.cancel()
         _isStreaming.value = true
         messageUpdateStrategy.clean()
 
         streamJob = viewModelScope.launch(Dispatchers.Main.immediate) {
+            val prompt = if (text.isBlank() && file != null)
+                getString(Res.string.describe_picture) else text
+
             val imageName = file?.let { chatImageStorage.saveImage(it.readBytes()) }
 
             localUseCase.insertMessage(
