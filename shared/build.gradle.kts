@@ -92,6 +92,9 @@ kotlin {
             implementation(libs.filekit.core) // проверьте последнюю версию на GitHub
             implementation(libs.filekit.dialogs.compose)
 
+            implementation(project(":core:network")) // или implementation(project(":feature:chat"))
+            implementation(project(":core:storages")) // или implementation(project(":feature:chat"))
+
 
         }
         iosMain.dependencies {

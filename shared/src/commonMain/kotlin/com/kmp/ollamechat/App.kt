@@ -5,7 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
-import com.kmp.ollamechat.di.commonDatabaseModule
+import com.kmp.ollamechat.core.network.client.di.networkModule
+import com.kmp.ollamechat.core.storages.di.commonDatabaseModule
+//import com.kmp.ollamechat.di.commonDatabaseModule
 import com.kmp.ollamechat.di.commonModule
 import com.kmp.ollamechat.di.viewModelModule
 import com.kmp.ollamechat.util.platformModule
@@ -34,7 +36,8 @@ fun App(
             platformModule,
             viewModelModule,
             commonModule,
-            commonDatabaseModule
+            commonDatabaseModule,
+            networkModule
         )
     }) {
         MaterialTheme {

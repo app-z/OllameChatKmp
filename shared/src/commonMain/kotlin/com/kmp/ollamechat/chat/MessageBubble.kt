@@ -31,7 +31,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.kmp.ollamechat.chat.model.ChatMessageUi
-import com.kmp.ollamechat.client.model.ChatRole
+//import com.kmp.ollamechat.client.model.ChatRole
+import com.kmp.ollamechat.core.network.client.model.ChatRole
 import com.kmp.ollamechat.util.toBoldAnnotatedString
 
 @Composable
@@ -80,7 +81,7 @@ fun MessageBubble(
             Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 if (!message.thinking.isNullOrEmpty()) {
                     ThinkingSection(
-                        thinking = message.thinking ?: "",
+                        thinking = message.thinking,
                         isExpanded = isThinkingExpanded,
                         isThinkingInProgress = !hasContent,
                         onToggle = { isThinkingExpanded = !isThinkingExpanded }

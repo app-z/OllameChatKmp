@@ -1,12 +1,11 @@
 package com.kmp.ollamechat.useCase
 
-import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.client.model.OllamaMessage
-import com.kmp.ollamechat.repository.StreamRepository
-import com.kmp.ollamechat.repository.model.StreamOllamaEvent
-import kotlinx.coroutines.flow.Flow
-import kotlin.io.encoding.Base64
+//import com.kmp.ollamechat.client.model.ChatRole
 
+import com.kmp.ollamechat.core.network.client.model.ChatRole
+import com.kmp.ollamechat.core.network.client.model.OllamaMessage
+import com.kmp.ollamechat.core.network.repository.StreamRepository
+import com.kmp.ollamechat.core.network.repository.model.StreamOllamaEvent
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.ImageFormat
 import io.github.vinceglb.filekit.PlatformFile
@@ -15,7 +14,9 @@ import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kotlin.io.encoding.Base64
 
 class StreamUseCase(val streamRepository: StreamRepository) {
 

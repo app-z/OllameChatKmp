@@ -1,7 +1,7 @@
 package com.kmp.ollamechat.useCase
 
-import com.kmp.ollamechat.chat.model.ChatMessageDto
-import com.kmp.ollamechat.repository.LocalRepository
+import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
+import com.kmp.ollamechat.core.storages.repository.LocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow

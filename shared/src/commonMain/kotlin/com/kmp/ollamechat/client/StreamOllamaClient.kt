@@ -3,8 +3,8 @@ package com.kmp.ollamechat.client
 import com.kmp.ollamechat.client.model.OllamaChatChunk
 import com.kmp.ollamechat.client.model.OllamaChatRequest
 import com.kmp.ollamechat.client.model.OllamaMessage
-import com.kmp.ollamechat.repository.Settings
-import com.kmp.ollamechat.repository.model.StreamOllamaEvent
+import com.kmp.ollamechat.core.network.repository.Settings
+import com.kmp.ollamechat.core.network.repository.model.StreamOllamaEvent
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.preparePost

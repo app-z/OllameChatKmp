@@ -1,6 +1,6 @@
 package com.kmp.ollamechat.useCase
 
-import com.kmp.ollamechat.repository.GenerateRepository
+import com.kmp.ollamechat.core.network.repository.GenerateRepository
 
 class GenerateUseCase(val generateRepository: GenerateRepository) {
 

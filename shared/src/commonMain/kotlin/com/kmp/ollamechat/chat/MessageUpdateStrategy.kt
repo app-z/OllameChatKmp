@@ -1,8 +1,10 @@
 package com.kmp.ollamechat.chat
 
-import com.kmp.ollamechat.chat.model.ChatMessageDto
-import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.repository.Settings
+//import com.kmp.ollamechat.chat.model.ChatMessageDto
+//import com.kmp.ollamechat.client.model.ChatRole
+import com.kmp.ollamechat.core.network.client.model.ChatRole
+import com.kmp.ollamechat.core.network.repository.Settings
+import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
 import com.kmp.ollamechat.useCase.LocalUseCase
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow

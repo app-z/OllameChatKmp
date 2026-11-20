@@ -1,12 +1,14 @@
 package com.kmp.ollamechat.chat
 
+// import com.kmp.ollamechat.client.model.ChatRole
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kmp.ollamechat.chat.model.ChatMessageDto
 import com.kmp.ollamechat.chat.model.ChatMessageUi
-import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.database.toChatMessageUi
-import com.kmp.ollamechat.repository.model.StreamOllamaEvent
+import com.kmp.ollamechat.chat.model.toChatMessageUi
+import com.kmp.ollamechat.core.network.client.model.ChatRole
+import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
+import com.kmp.ollamechat.core.network.repository.model.StreamOllamaEvent
+//import com.kmp.ollamechat.database.toChatMessageUi
 import com.kmp.ollamechat.useCase.LocalUseCase
 import com.kmp.ollamechat.useCase.StreamUseCase
 import com.kmp.ollamechat.useCase.prepareImageForOllama
@@ -31,7 +33,6 @@ import kotlinx.coroutines.launch
 import ollamechat.shared.generated.resources.Res
 import ollamechat.shared.generated.resources.describe_picture
 import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.stringResource
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,

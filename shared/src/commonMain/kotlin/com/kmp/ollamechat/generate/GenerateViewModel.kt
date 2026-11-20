@@ -2,8 +2,10 @@ package com.kmp.ollamechat.generate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kmp.ollamechat.chat.model.ChatMessageDto
-import com.kmp.ollamechat.client.model.ChatRole
+import com.kmp.ollamechat.core.network.client.model.ChatRole
+import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
+//import com.kmp.ollamechat.chat.model.ChatMessageDto
+//import com.kmp.ollamechat.client.model.ChatRole
 import com.kmp.ollamechat.useCase.GenerateUseCase
 import com.kmp.ollamechat.useCase.LocalUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
