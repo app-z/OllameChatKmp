@@ -78,22 +78,23 @@ kotlin {
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.compose.material.icons.extended)
 
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
+//            implementation(libs.ktor.client.core)
+//            implementation(libs.ktor.client.content.negotiation)
+//            implementation(libs.ktor.serialization.kotlinx.json)
 //            implementation(libs.kotlinx.serialization.json)
 
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.sqlite.bundled)
+//            implementation(libs.androidx.room.runtime)
+//            implementation(libs.androidx.sqlite.bundled)
 
-            implementation(libs.coil.compose) // Актуальная версия Coil 3
-            implementation(libs.filekit.coil) // Модуль интеграции с FileKit
+            implementation(libs.coil.compose)
+            implementation(libs.filekit.coil) //  FileKit
 
-            implementation(libs.filekit.core) // проверьте последнюю версию на GitHub
+            implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs.compose)
 
-            implementation(project(":core:network")) // или implementation(project(":feature:chat"))
-            implementation(project(":core:storages")) // или implementation(project(":feature:chat"))
+            implementation(project(":core:network"))
+            implementation(project(":core:storages"))
+            implementation(project(":core:domain"))
 
 
         }
@@ -110,17 +111,17 @@ kotlin {
     }
 }
 
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}
-
-dependencies {
-
-    add("kspAndroid", libs.androidx.room.compiler)
-
-    // Для iOS-таргетов (оставьте те, которые объявлены у вас в kotlin { ... })
-    add("kspIosArm64", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-
-    androidRuntimeClasspath(libs.compose.uiTooling)
-}
+//ksp {
+//    arg("room.schemaLocation", "$projectDir/schemas")
+//}
+//
+//dependencies {
+//
+//    add("kspAndroid", libs.androidx.room.compiler)
+//
+//    // Для iOS-таргетов (оставьте те, которые объявлены у вас в kotlin { ... })
+//    add("kspIosArm64", libs.androidx.room.compiler)
+//    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+//
+//    androidRuntimeClasspath(libs.compose.uiTooling)
+//}

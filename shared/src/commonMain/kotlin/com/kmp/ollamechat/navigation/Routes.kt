@@ -12,7 +12,4 @@ data object SettingsRoute : Route
 data object HomeRoute: Route
 
 @Serializable
-data object GenerateRoute : Route
-
-@Serializable
 data object ChatRoute : Route

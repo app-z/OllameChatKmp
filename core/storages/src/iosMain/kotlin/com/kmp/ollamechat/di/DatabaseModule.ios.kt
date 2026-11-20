@@ -11,7 +11,6 @@ import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
 import platform.Foundation.NSUserDomainMask
 
-// iosMain/.../DatabaseModule.ios.kt
 @OptIn(ExperimentalForeignApi::class)
 actual val platformDatabaseModule: Module = module {
     single<RoomDatabase.Builder<AppDatabase>> {

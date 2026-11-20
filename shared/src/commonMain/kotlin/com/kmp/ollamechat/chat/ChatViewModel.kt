@@ -1,23 +1,24 @@
 package com.kmp.ollamechat.chat
 
-// import com.kmp.ollamechat.client.model.ChatRole
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.chat.model.toChatMessageUi
-import com.kmp.ollamechat.core.network.client.model.ChatRole
-import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
-import com.kmp.ollamechat.core.network.repository.model.StreamOllamaEvent
-//import com.kmp.ollamechat.database.toChatMessageUi
-import com.kmp.ollamechat.useCase.LocalUseCase
-import com.kmp.ollamechat.useCase.StreamUseCase
-import com.kmp.ollamechat.useCase.prepareImageForOllama
+import com.kmp.ollamechat.core.domain.model.ChatRole
+import com.kmp.ollamechat.core.domain.model.StreamOllamaEvent
+import com.kmp.ollamechat.core.usecase.LocalUseCase
+import com.kmp.ollamechat.core.usecase.StreamUseCase
 import com.kmp.ollamechat.util.ChatImageStorage
 import com.kmp.ollamechat.util.Logger
 import com.kmp.ollamechat.util.TextSpeaker
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.ImageFormat
 import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.compressImage
 import io.github.vinceglb.filekit.readBytes
+import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ollamechat.shared.generated.resources.Res
 import ollamechat.shared.generated.resources.describe_picture
 import org.jetbrains.compose.resources.getString
@@ -55,7 +57,7 @@ class ChatViewModel(
                     role = item.role,
                     content = item.content,
                     thinking = item.thinking,
-                    imageFile = chatImageStorage.getImageFile(item.imagePath)
+                    imageFile = chatImageStorage.getImageFile(item.images?.firstOrNull())
                 )
             }
         }
@@ -64,9 +66,8 @@ class ChatViewModel(
         dbMessagesFlow
             .conflate(),
         messageUpdateStrategy.currentMessage
-            .conflate()
             .onStart {
-                emit(null) // start emit list because of combine
+                emit(null) // start emit list first for of combine
             }
     ) { dbUi, current ->
         if (current == null) {
@@ -95,21 +96,13 @@ class ChatViewModel(
 
             val imageName = file?.let { chatImageStorage.saveImage(it.readBytes()) }
 
-            localUseCase.insertMessage(
-                ChatMessageDto(
-                    role = ChatRole.USER,
-                    thinking = null,
-                    content = prompt,
-                    imagePath = imageName
-                )
+            localUseCase.insertUserMessage(
+                content = prompt,
+                imagePath = if (imageName.isNullOrEmpty()) emptyList() else listOf(imageName)
             )
 
-            val assistantMessageId = localUseCase.insertMessage(
-                ChatMessageDto(
-                    role = ChatRole.ASSISTANT,
-                    thinking = null,
-                    content = ""
-                )
+            val assistantMessageId = localUseCase.insertAssistantMessage(
+                content = ""
             )
 
             streamAssistantResponse(
@@ -151,11 +144,8 @@ class ChatViewModel(
                     }
 
                     is StreamOllamaEvent.Error -> {
-                        localUseCase.insertMessage(
-                            ChatMessageDto(
-                                role = ChatRole.SYSTEM,
-                                content = "Ошибка: ${event.message}"
-                            )
+                        localUseCase.insertSystemMessage(
+                            content = "Ошибка: ${event.message}"
                         )
                         Logger.d(event.message)
                     }
@@ -189,4 +179,41 @@ class ChatViewModel(
         textSpeaker.shutdown()
         super.onCleared()
     }
+
+    /**
+     * Читает файл и сжимает его, если размер превышает заданный порог.
+     * По умолчанию порог — 500 КБ (512 * 1024 байт).
+     */
+    suspend fun PlatformFile.prepareImageForOllama(
+        maxFileSizeBytes: Long = 512 * 1024L,
+        quality: Int = 80,
+        maxDimension: Int = 1024
+    ): ByteArray = withContext(Dispatchers.IO) {
+        // 1. Проверяем размер файла на диске до полного чтения
+        val fileSize = size()
+        val rawBytes = readBytes()
+
+        // 2. Если картинка уже маленькая (проверяем и размер файла, и длину массива), возвращаем как есть
+        val actualSize = if (fileSize > 0) fileSize else rawBytes.size.toLong()
+        if (actualSize <= maxFileSizeBytes) {
+            return@withContext rawBytes
+        }
+
+        // 3. Сжимаем тяжелое изображение и уменьшаем его до maxDimension по длинной стороне
+        val compressedBytes = FileKit.compressImage(
+            bytes = rawBytes,
+            quality = quality, // 0..100
+            maxWidth = maxDimension,
+            maxHeight = maxDimension,
+            imageFormat = ImageFormat.JPEG
+        )
+
+        // 4. Защита на случай, если после перекодирования в JPEG файл внезапно стал больше (редко, но бывает для PNG)
+        if (compressedBytes.size < rawBytes.size) {
+            compressedBytes
+        } else {
+            rawBytes
+        }
+    }
+
 }

@@ -1,14 +1,13 @@
 package com.kmp.ollamechat.chat
 
-//import com.kmp.ollamechat.chat.model.ChatMessageDto
-//import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.core.network.client.model.ChatRole
+import com.kmp.ollamechat.core.domain.model.ChatRole
+import com.kmp.ollamechat.core.domain.model.OllamaMessage
 import com.kmp.ollamechat.core.network.repository.Settings
 import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
-import com.kmp.ollamechat.useCase.LocalUseCase
+import com.kmp.ollamechat.core.usecase.LocalUseCase
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 import kotlin.time.TimeSource
 
@@ -23,8 +22,8 @@ class MessageUpdateStrategy(
     private val timeSource = TimeSource.Monotonic
     private var lastSaveMark = timeSource.markNow()
 
-    private val _currentMessage = MutableSharedFlow<ChatMessageDto?>(replay = 1)
-    val currentMessage = _currentMessage.asSharedFlow()
+    private val _currentMessage = MutableStateFlow<ChatMessageDto?>(null)
+    val currentMessage = _currentMessage.asStateFlow()
 
     val thinkingBuilder = StringBuilder()
     val contentBuilder = StringBuilder()
@@ -92,7 +91,7 @@ class MessageUpdateStrategy(
         contentBuilder: StringBuilder
     ) {
         localUseCase.updateMessage(
-            ChatMessageDto(
+            OllamaMessage(
                 id = id,
                 role = ChatRole.ASSISTANT,
                 thinking = thinkingBuilder.toString().ifEmpty { null },

@@ -85,6 +85,7 @@ jetbrains-lifecycle-viewmodelNavigation3 = { module = "org.jetbrains.androidx.li
 savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version.ref = "savedstate" }
 
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 compose-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }

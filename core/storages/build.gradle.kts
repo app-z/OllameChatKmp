@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
+    android {
         namespace = "com.kmp.ollamechat.core.storages"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -26,8 +26,7 @@ kotlin {
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.androidx.sqlite.bundled)
 
-                implementation(project(":core:network")) // или implementation(project(":feature:chat"))
-
+                implementation(project(":core:domain"))
             }
             androidMain.dependencies {
                 implementation(libs.ktor.client.okhttp)
@@ -47,8 +46,6 @@ ksp {
 dependencies {
 
     add("kspAndroid", libs.androidx.room.compiler)
-
-    // Для iOS-таргетов (оставьте те, которые объявлены у вас в kotlin { ... })
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 

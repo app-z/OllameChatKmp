@@ -8,7 +8,6 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
-// androidMain/.../DatabaseModule.android.kt
 actual val platformDatabaseModule: Module = module {
     single<RoomDatabase.Builder<AppDatabase>> {
         val appContext = androidContext().applicationContext

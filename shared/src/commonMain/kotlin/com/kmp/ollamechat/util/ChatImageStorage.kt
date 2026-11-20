@@ -12,20 +12,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class ChatImageStorage {
-
-    // Выделяем отдельную подпапку для картинок чата
     private val imagesDir: PlatformFile
         get() = FileKit.filesDir / "chat_images"
 
     /**
      * Сохраняет сжатые байты на диск и возвращает ИМЯ файла для записи в БД.
      */
-    @OptIn(ExperimentalUuidApi::class, ExperimentalTime::class)
     suspend fun saveImage(bytes: ByteArray): String = withContext(Dispatchers.IO) {
         if (!imagesDir.exists()) {
             imagesDir.createDirectories()

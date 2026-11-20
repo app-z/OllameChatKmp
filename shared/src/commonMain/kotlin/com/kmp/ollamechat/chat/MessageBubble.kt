@@ -1,5 +1,6 @@
 package com.kmp.ollamechat.chat
 
+//import com.kmp.ollamechat.client.model.ChatRole
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,8 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.kmp.ollamechat.chat.model.ChatMessageUi
-//import com.kmp.ollamechat.client.model.ChatRole
-import com.kmp.ollamechat.core.network.client.model.ChatRole
+import com.kmp.ollamechat.core.domain.model.ChatRole
 import com.kmp.ollamechat.util.toBoldAnnotatedString
 
 @Composable

@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
 
-    androidLibrary {
+    android {
         namespace = "com.kmp.ollamechat.core.network"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -26,8 +26,12 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
 
                 implementation(libs.koin.core)
-
                 implementation(libs.timber)
+
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.kotlinx.serialization.core)
+
+                implementation(project(":core:domain"))
             }
             androidMain.dependencies {
                 implementation(libs.ktor.client.okhttp)

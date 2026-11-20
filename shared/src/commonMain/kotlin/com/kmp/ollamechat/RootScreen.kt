@@ -12,12 +12,9 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.kmp.ollamechat.chat.ChatScreen
 import com.kmp.ollamechat.chat.ChatViewModel
-import com.kmp.ollamechat.generate.GenerateScreen
-import com.kmp.ollamechat.generate.GenerateViewModel
 import com.kmp.ollamechat.home.HomeScreen
 import com.kmp.ollamechat.home.HomeViewModel
 import com.kmp.ollamechat.navigation.ChatRoute
-import com.kmp.ollamechat.navigation.GenerateRoute
 import com.kmp.ollamechat.navigation.HomeRoute
 import com.kmp.ollamechat.navigation.Route
 import com.kmp.ollamechat.navigation.SettingsRoute
@@ -51,12 +48,10 @@ fun RootScreen() {
             entryProvider = entryProvider {
                 entry<HomeRoute> {
                     val vm: HomeViewModel = koinViewModel()
-                    HomeScreen( viewModel = vm,
+                    HomeScreen(
+                        viewModel = vm,
                         onChatRoute = {
                             backStack.add(ChatRoute)
-                        },
-                        onGenerateRoute = {
-                            backStack.add(GenerateRoute)
                         }
                     )
                 }
@@ -65,22 +60,20 @@ fun RootScreen() {
                     val vm: SettingsViewModel = koinViewModel()
                     SettingsScreen(
                         viewModel = vm,
-                        onBack = { backStack.removeLastOrNull() }
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLastOrNull()
+                            }                        }
                     )
-                }
-                entry<GenerateRoute> {
-                    val vm: GenerateViewModel = koinViewModel()
-                    GenerateScreen(
-                        viewModel = vm,
-                        onBack = { backStack.removeLastOrNull() },
-
-                        )
                 }
                 entry<ChatRoute> {
                     val vm: ChatViewModel = koinViewModel()
                     ChatScreen(
                         viewModel = vm,
-                        onBack = { backStack.removeLastOrNull() }
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLastOrNull()
+                            }                        }
                     )
                 }
             }
