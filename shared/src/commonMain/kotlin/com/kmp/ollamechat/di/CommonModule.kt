@@ -66,15 +66,15 @@ val commonModule = module {
 
 
     
-    single<GenerateUseCase> { GenerateUseCase(get()) }
+    factory <GenerateUseCase> { GenerateUseCase(get()) }
 
-    single<StreamUseCase> { StreamUseCase(get()) }
+    factory<StreamUseCase> { StreamUseCase(get()) }
 
-    single<LocalUseCase> { LocalUseCase(get()) }
+    factory<LocalUseCase> { LocalUseCase(get()) }
 
-    single { ChatImageStorage() }
+    factory { ChatImageStorage() }
 
-    single { MessageUpdateStrategy(get(), get()) }
+    factory { MessageUpdateStrategy(get(), get()) }
 
 
 }

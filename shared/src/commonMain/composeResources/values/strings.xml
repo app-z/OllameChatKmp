@@ -1,0 +1,5 @@
+<resources>
+    <string name="home">Home</string>
+    <string name="chat">Chat</string>
+    <string name="generate">Generate</string>
+</resources>

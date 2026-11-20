@@ -1,22 +1,8 @@
 package com.kmp.ollamechat
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Chat
-import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -34,6 +20,9 @@ import com.kmp.ollamechat.navigation.ChatRoute
 import com.kmp.ollamechat.navigation.GenerateRoute
 import com.kmp.ollamechat.navigation.HomeRoute
 import com.kmp.ollamechat.navigation.Route
+import com.kmp.ollamechat.navigation.SettingsRoute
+import com.kmp.ollamechat.settings.SettingsScreen
+import com.kmp.ollamechat.settings.SettingsViewModel
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,98 +38,58 @@ fun RootScreen() {
     }
     val backStack = rememberNavBackStack(config, HomeRoute)
 
-    // Текущий маршрут (последний в стеке) — для title / bottom bar
-    val currentRoute: NavKey? = backStack.lastOrNull()
-
     MaterialTheme {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            when (currentRoute) {
-                                is HomeRoute -> "Home"
-                                is ChatRoute -> "Chat"
-                                else -> "App"
-                            }
-                        )
-                    },
-                    navigationIcon = {
-                        if (backStack.size > 1) {
-                            IconButton(onClick = { backStack.removeLastOrNull() }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back"
-                                )
-                            }
+
+
+        NavDisplay(
+            backStack = backStack,
+            onBack = { backStack.removeLastOrNull() },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator(),
+            ),
+            entryProvider = entryProvider {
+                entry<HomeRoute> {
+                    val vm: HomeViewModel = koinViewModel()
+                    HomeScreen( viewModel = vm,
+                        onChatRoute = {
+                            backStack.add(ChatRoute)
+                        },
+                        onGenerateRoute = {
+                            backStack.add(GenerateRoute)
                         }
-                    },
-                )
-            },
-            bottomBar = {
-                NavigationBar {
-                    NavigationBarItem(
-                        selected = currentRoute is HomeRoute,
-                        onClick = {
-                            if (currentRoute !is HomeRoute) {
-                                backStack.clear()
-                                backStack.add(HomeRoute)
-                            }
-                        },
-                        icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                        label = { Text("Home") },
                     )
-
-                    NavigationBarItem(
-                        selected = currentRoute is ChatRoute,
-                        onClick = {
-                            if (currentRoute !is ChatRoute) {
-                                backStack.clear()
-                                backStack.add(ChatRoute)
-                            }
-                        },
-                        icon = { Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = null) },
-                        label = { Text("Chat") },
-                    )
-
-                    NavigationBarItem(
-                        selected = currentRoute is GenerateRoute,
-                        onClick = {
-                            if (currentRoute !is GenerateRoute) {
-                                backStack.clear()
-                                backStack.add(GenerateRoute)
-                            }
-                        },
-                        icon = { Icon(Icons.AutoMirrored.Filled.Message, contentDescription = null) },
-                        label = { Text("Generate") },
-                    )
-
                 }
-            },
-        ) { innerPadding ->
-            NavDisplay(
-                backStack = backStack,
-                onBack = { backStack.removeLastOrNull() },
-                modifier = Modifier.padding(innerPadding),   // ← учитываем Scaffold
-                entryDecorators = listOf(
-                    rememberSaveableStateHolderNavEntryDecorator(),
-                    rememberViewModelStoreNavEntryDecorator(),
-                ),
-                entryProvider = entryProvider {
-                    entry<HomeRoute> {
-                        val vm: HomeViewModel = koinViewModel()
-                        HomeScreen(vm)
-                    }
-                    entry<GenerateRoute> {
-                        val vm: GenerateViewModel = koinViewModel()
-                        GenerateScreen(vm)
-                    }
-                    entry<ChatRoute> {
-                        val vm: ChatViewModel = koinViewModel()
-                        ChatScreen(vm)
-                    }
+
+                entry<SettingsRoute> {
+                    val vm: SettingsViewModel = koinViewModel()
+                    SettingsScreen(
+                        viewModel = vm,
+                        onBack = { backStack.removeLastOrNull() }
+                    )
                 }
-            )
-        }
+                entry<GenerateRoute> {
+                    val vm: GenerateViewModel = koinViewModel()
+                    GenerateScreen(
+                        viewModel = vm,
+                        onBack = { backStack.removeLastOrNull() },
+
+                        )
+                }
+                entry<ChatRoute> {
+                    val vm: ChatViewModel = koinViewModel()
+                    ChatScreen(
+                        viewModel = vm,
+                        onBack = { backStack.removeLastOrNull() }
+                    )
+                }
+            }
+        )
     }
 }
+
+//@Composable
+//@Preview
+//fun RootScreenPreview() {
+//    RootScreen()
+//}

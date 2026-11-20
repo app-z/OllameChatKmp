@@ -8,11 +8,9 @@ import coil3.compose.setSingletonImageLoaderFactory
 import com.kmp.ollamechat.di.commonDatabaseModule
 import com.kmp.ollamechat.di.commonModule
 import com.kmp.ollamechat.di.viewModelModule
-import com.kmp.ollamechat.home.HomeViewModel
 import com.kmp.ollamechat.util.platformModule
 import io.github.vinceglb.filekit.coil.addPlatformFileSupport
 import org.koin.compose.KoinApplication
-import org.koin.compose.viewmodel.koinViewModel
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.koinConfiguration
 
