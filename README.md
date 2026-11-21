@@ -56,21 +56,23 @@ Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
 ```
 .
 ├── androidApp/          # Android application
+├── core/                # Core modules
+│   ├── domain/          # Business logic and models
+│   ├── network/         # Networking and API clients
+│   └── storages/        # Local storage and databases
 ├── iosApp/              # iOS application
 └── shared/              # Shared Kotlin Multiplatform code
     └── src/
         └── commonMain/kotlin/com/kmp/ollamechat/
             ├── App.kt            # Main entry point
             ├── chat/              # Chat UI and ViewModels
-            ├── client/            # Ollama API clients
-            ├── database/          # Local database (SQLDelight)
             ├── di/                # Dependency Injection (Koin)
-            ├── generate/          # AI Generation screens
             ├── home/              # Home screen
             ├── navigation/        # Navigation routes
-            ├── repository/        # Data repositories
-            ├── useCase/           # Business logic use cases
-            └── util/              # Utilities (Storage, Logger, etc.)
+            ├── settings/          # Settings screen
+            ├── util/              # Utilities
+            └── RootScreen.kt     # Root navigation screen
 ```
+
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
