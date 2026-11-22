@@ -41,7 +41,7 @@ val networkModule = module {
 
     single<Settings> { Settings() }
 
-    single<RemoteStreamDataSource> { RemoteStreamDataSourceImpl(get(), get()) }
+    single<RemoteStreamDataSource> { RemoteStreamDataSourceImpl(get(), get(), get()) }
 
     single<StreamOllamaClient> { StreamOllamaClient(get(), get()) }
 

@@ -8,6 +8,6 @@ val domainModule = module {
 
     factory<StreamUseCase> { StreamUseCase(get()) }
 
-    factory<LocalUseCase> { LocalUseCase(get()) }
+    factory<LocalUseCase> { LocalUseCase(get(), get()) }
 
 }

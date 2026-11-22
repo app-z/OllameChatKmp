@@ -1,5 +1,6 @@
 package com.kmp.ollamechat.domain.usecase
 
+import com.kmp.ollamechat.common.AppDispatchers
 import com.kmp.ollamechat.domain.datasource.LocalChatDataSource
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
@@ -8,11 +9,14 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-class LocalUseCase(val localRepository: LocalChatDataSource) {
+class LocalUseCase(
+    private val localRepository: LocalChatDataSource,
+    private val dispatchers: AppDispatchers
+) {
     fun observeMessages(): Flow<List<OllamaMessage>> =
         localRepository.observeMessages()
 
-    suspend fun getMessages(): List<OllamaMessage> = withContext(Dispatchers.IO) {
+    suspend fun getMessages(): List<OllamaMessage> = withContext(dispatchers.io) {
         localRepository.getMessages()
     }
 
@@ -34,7 +38,7 @@ class LocalUseCase(val localRepository: LocalChatDataSource) {
         thinking: String? = null,
         content: String,
         imagePath: List<String> = emptyList()
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(dispatchers.io) {
         localRepository.insertMessage(
             role = ChatRole.ASSISTANT,
             thinking = thinking,
@@ -45,7 +49,7 @@ class LocalUseCase(val localRepository: LocalChatDataSource) {
 
     suspend fun insertSystemMessage(
         content: String,
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(dispatchers.io) {
         localRepository.insertMessage(
             role = ChatRole.SYSTEM,
             thinking = null,

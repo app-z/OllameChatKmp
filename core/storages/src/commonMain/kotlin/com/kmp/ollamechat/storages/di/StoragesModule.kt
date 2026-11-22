@@ -6,5 +6,5 @@ import org.koin.dsl.module
 
 val storageModule = module {
 
-    single<LocalChatDataSource> { LocalChatDataSourceImpl(get()) }
+    single<LocalChatDataSource> { LocalChatDataSourceImpl(get(), get()) }
 }
