@@ -1,6 +1,6 @@
 package com.kmp.ollamechat.chat.model
 
-import com.kmp.ollamechat.core.network.repository.model.ChatMessageDto
+import com.kmp.ollamechat.network.datasource.model.ChatMessageDto
 
 fun ChatMessageDto.toChatMessageUi(): ChatMessageUi {
     return ChatMessageUi(

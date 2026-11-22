@@ -1,8 +1,8 @@
 package com.kmp.ollamechat.di
 
 import com.kmp.ollamechat.chat.MessageUpdateStrategy
-import com.kmp.ollamechat.core.usecase.LocalUseCase
-import com.kmp.ollamechat.core.usecase.StreamUseCase
+import com.kmp.ollamechat.domain.usecase.LocalUseCase
+import com.kmp.ollamechat.domain.usecase.StreamUseCase
 import com.kmp.ollamechat.util.ChatImageStorage
 import org.koin.dsl.module
 

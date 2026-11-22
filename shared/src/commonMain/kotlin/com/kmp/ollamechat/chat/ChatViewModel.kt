@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.chat.model.toChatMessageUi
-import com.kmp.ollamechat.core.domain.model.ChatRole
-import com.kmp.ollamechat.core.domain.model.StreamOllamaEvent
-import com.kmp.ollamechat.core.usecase.LocalUseCase
-import com.kmp.ollamechat.core.usecase.StreamUseCase
+import com.kmp.ollamechat.domain.model.ChatRole
+import com.kmp.ollamechat.domain.model.StreamOllamaEvent
+import com.kmp.ollamechat.domain.usecase.LocalUseCase
+import com.kmp.ollamechat.domain.usecase.StreamUseCase
 import com.kmp.ollamechat.util.ChatImageStorage
 import com.kmp.ollamechat.util.Logger
 import com.kmp.ollamechat.util.TextSpeaker
