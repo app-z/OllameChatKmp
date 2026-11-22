@@ -30,7 +30,7 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.core)
 
-                api(project(":core:common"))
+                implementation(project(":core:common"))
 
             }
             androidMain.dependencies {

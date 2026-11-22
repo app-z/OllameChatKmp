@@ -27,6 +27,8 @@ kotlin {
                 implementation(libs.androidx.sqlite.bundled)
 
                 implementation(project(":core:domain"))
+                implementation(project(":core:common"))
+
             }
             androidMain.dependencies {
                 implementation(libs.ktor.client.okhttp)
