@@ -31,7 +31,10 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.core)
 
+                // Move Model to separate module!
                 implementation(project(":core:domain"))
+
+                implementation(project(":core:common"))
             }
             androidMain.dependencies {
                 implementation(libs.ktor.client.okhttp)

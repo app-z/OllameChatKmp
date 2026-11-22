@@ -1,6 +1,6 @@
 package com.kmp.ollamechat.network.client
 
-import com.kmp.ollamechat.network.datasource.Settings
+import com.kmp.ollamechat.common.Settings
 import com.kmp.ollamechat.network.datasource.model.GenerateOllamaRequest
 import com.kmp.ollamechat.network.datasource.model.GenerateOllamaResponse
 import io.ktor.client.HttpClient

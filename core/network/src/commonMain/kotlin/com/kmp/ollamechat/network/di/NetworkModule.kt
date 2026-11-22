@@ -1,9 +1,9 @@
-package com.kmp.ollamechat.network.client.di
+package com.kmp.ollamechat.network.di
 
+import com.kmp.ollamechat.common.Settings
 import com.kmp.ollamechat.domain.datasource.RemoteStreamDataSource
 import com.kmp.ollamechat.network.client.StreamOllamaClient
 import com.kmp.ollamechat.network.datasource.RemoteStreamDataSourceImpl
-import com.kmp.ollamechat.network.datasource.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.HttpTimeoutConfig

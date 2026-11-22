@@ -5,11 +5,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
-import com.kmp.ollamechat.network.client.di.networkModule
+import com.kmp.ollamechat.common.di.commonModule
+import com.kmp.ollamechat.network.di.networkModule
 import com.kmp.ollamechat.storages.di.commonDatabaseModule
 import com.kmp.ollamechat.storages.di.storageModule
-import com.kmp.ollamechat.di.commonModule
+import com.kmp.ollamechat.di.shouldRefactorModule
 import com.kmp.ollamechat.di.viewModelModule
+import com.kmp.ollamechat.domain.di.domainModule
 import com.kmp.ollamechat.util.platformModule
 import io.github.vinceglb.filekit.coil.addPlatformFileSupport
 import org.koin.compose.KoinApplication
@@ -35,10 +37,12 @@ fun App(
         modules(
             platformModule,
             viewModelModule,
-            commonModule,
+            shouldRefactorModule,
             commonDatabaseModule,
+            domainModule,
             networkModule,
-            storageModule
+            storageModule,
+            commonModule
         )
     }) {
         MaterialTheme {

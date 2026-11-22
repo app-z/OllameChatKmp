@@ -1,6 +1,5 @@
-package com.kmp.ollamechat.network.datasource
+package com.kmp.ollamechat.common
 
-import com.kmp.ollamechat.network.datasource.model.ModelOption
 import kotlin.time.Duration.Companion.milliseconds
 
 class Settings {

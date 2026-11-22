@@ -1,4 +1,4 @@
-package com.kmp.ollamechat.network.datasource.model
+package com.kmp.ollamechat.common
 
 data class ModelOption(
     val displayName: String,

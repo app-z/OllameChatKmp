@@ -78,23 +78,16 @@ kotlin {
             implementation(libs.kotlinx.serialization.core)
             implementation(libs.compose.material.icons.extended)
 
-//            implementation(libs.ktor.client.core)
-//            implementation(libs.ktor.client.content.negotiation)
-//            implementation(libs.ktor.serialization.kotlinx.json)
-//            implementation(libs.kotlinx.serialization.json)
-
-//            implementation(libs.androidx.room.runtime)
-//            implementation(libs.androidx.sqlite.bundled)
-
             implementation(libs.coil.compose)
             implementation(libs.filekit.coil) //  FileKit
 
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs.compose)
 
-            implementation(project(":core:network"))
-            implementation(project(":core:storages"))
+                implementation(project(":core:network"))
+                implementation(project(":core:storages"))
             implementation(project(":core:domain"))
+            implementation(project(":core:common"))
 
 
         }

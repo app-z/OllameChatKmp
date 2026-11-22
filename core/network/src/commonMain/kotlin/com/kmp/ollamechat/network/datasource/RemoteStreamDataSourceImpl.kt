@@ -1,5 +1,6 @@
 package com.kmp.ollamechat.network.datasource
 
+import com.kmp.ollamechat.common.Settings
 import com.kmp.ollamechat.domain.datasource.RemoteStreamDataSource
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import com.kmp.ollamechat.domain.model.StreamOllamaEvent
