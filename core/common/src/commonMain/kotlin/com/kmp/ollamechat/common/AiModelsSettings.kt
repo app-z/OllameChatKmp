@@ -1,13 +1,6 @@
 package com.kmp.ollamechat.common
 
-import kotlin.time.Duration.Companion.milliseconds
-
-class Settings {
-    private val url = "http://192.168.1.215:11434"
-
-//    private val url = "http://192.168.1.216:11434"
-
-    fun getServerUrl() = url
+class AiModelsSettings {
 
     private val availableModels = listOf(
         ModelOption("gemma4:26b", "gemma4:26b"),
@@ -28,7 +21,5 @@ class Settings {
     private var currentModel = getAvailableModels().first()
 
     fun getCurrentModel() = currentModel
-
-    fun getIntervalForSaveMessageToDb() = 250.milliseconds
 
 }

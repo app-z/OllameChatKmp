@@ -1,7 +1,7 @@
 package com.kmp.ollamechat.network.di
 
-import com.kmp.ollamechat.common.Settings
 import com.kmp.ollamechat.domain.datasource.RemoteStreamDataSource
+import com.kmp.ollamechat.network.client.ServerSettings
 import com.kmp.ollamechat.network.client.StreamOllamaClient
 import com.kmp.ollamechat.network.datasource.RemoteStreamDataSourceImpl
 import io.ktor.client.HttpClient
@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 val networkModule = module {
-    single<Settings> { Settings() }
+    single<ServerSettings> { ServerSettings() }
 
     single<HttpClient> {
         HttpClient {
@@ -39,9 +39,16 @@ val networkModule = module {
         Json { ignoreUnknownKeys = true; isLenient = true }
     }
 
-    single<Settings> { Settings() }
+    single<ServerSettings> { ServerSettings() }
 
-    single<RemoteStreamDataSource> { RemoteStreamDataSourceImpl(get(), get(), get()) }
+    single<RemoteStreamDataSource> {
+        RemoteStreamDataSourceImpl(
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
     single<StreamOllamaClient> { StreamOllamaClient(get(), get()) }
 

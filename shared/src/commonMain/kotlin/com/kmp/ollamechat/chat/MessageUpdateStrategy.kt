@@ -1,10 +1,12 @@
 package com.kmp.ollamechat.chat
 
-import com.kmp.ollamechat.common.Settings
+import com.kmp.ollamechat.common.AiModelsSettings
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import com.kmp.ollamechat.domain.usecase.LocalUseCase
+import com.kmp.ollamechat.network.client.ServerSettings
 import com.kmp.ollamechat.network.datasource.model.ChatMessageDto
+import com.kmp.ollamechat.storages.settings.Settings
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

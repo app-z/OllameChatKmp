@@ -1,6 +1,6 @@
 package com.kmp.ollamechat.network.client
 
-import com.kmp.ollamechat.common.Settings
+import com.kmp.ollamechat.common.AiModelsSettings
 import com.kmp.ollamechat.network.datasource.model.GenerateOllamaRequest
 import com.kmp.ollamechat.network.datasource.model.GenerateOllamaResponse
 import io.ktor.client.HttpClient
@@ -11,7 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
 class GenerateOllamaClient(
-    private val settings: Settings,
+    private val aiModelsSettings: AiModelsSettings,
     private val client: HttpClient
 ) {
     suspend fun sendPrompt(serverUrl: String, prompt: String): Result<String> {
@@ -20,7 +20,7 @@ class GenerateOllamaClient(
                 contentType(ContentType.Application.Json)
                 setBody(
                     GenerateOllamaRequest(
-                        model = settings.getCurrentModel().id,
+                        model = aiModelsSettings.getCurrentModel().id,
                         prompt = prompt,
                         stream = false
                     )
