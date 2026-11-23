@@ -15,4 +15,6 @@ val commonDatabaseModule = module {
     }
 
     single { get<AppDatabase>().MessagesDao() }
+
+    single { get<AppDatabase>().ModelDao() }
 }

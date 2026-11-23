@@ -21,6 +21,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun HomeScreen(
     onChatRoute: () -> Unit,
+    onSettings:() -> Unit,
     viewModel: HomeViewModel
 ) {
 
@@ -43,6 +44,10 @@ fun HomeScreen(
 
             Button(onClick = onChatRoute) {
                 Text(text = "Chat Route")
+            }
+
+            Button(onClick = onSettings) {
+                Text(text = "Settings")
             }
 
         }

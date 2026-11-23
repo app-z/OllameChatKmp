@@ -9,12 +9,10 @@ import com.kmp.ollamechat.storages.database.toChatMessage
 import com.kmp.ollamechat.storages.database.toMessagesEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 class LocalChatDataSourceImpl(
-    private val messagesDao: MessagesDao,
-    private val dispatchers: AppDispatchers
+    private val messagesDao: MessagesDao
 ) : LocalChatDataSource {
     override suspend fun getMessages(): List<OllamaMessage> {
         return messagesDao.getAllMessages().first().map { it.toChatMessage() }
@@ -23,7 +21,7 @@ class LocalChatDataSourceImpl(
     override fun observeMessages(): Flow<List<OllamaMessage>> =
         messagesDao.getAllMessages().map { entitiesList ->
             entitiesList.map { it.toChatMessage() }
-        }.flowOn(dispatchers.io)
+        }
 
     override suspend fun insertMessage(
         role: ChatRole,

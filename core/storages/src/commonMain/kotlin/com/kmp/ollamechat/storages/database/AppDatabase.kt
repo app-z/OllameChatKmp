@@ -8,11 +8,13 @@ import androidx.room.TypeConverters
 
 const val DB_Name = "MessagesDB"
 
-@Database(entities = [MessagesEntity::class], version = 14)
+@Database(entities = [MessagesEntity::class, ModelsEntity::class], version = 19)
 @ConstructedBy(AppDatabaseConstructor::class)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun MessagesDao(): MessagesDao
+
+    abstract fun ModelDao(): ModelDao
 }
 
 @Suppress("NO_ACTUAL_FOR_EXPECT")

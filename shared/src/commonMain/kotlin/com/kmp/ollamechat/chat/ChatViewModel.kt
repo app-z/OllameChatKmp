@@ -6,7 +6,7 @@ import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.chat.model.toChatMessageUi
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.StreamOllamaEvent
-import com.kmp.ollamechat.domain.usecase.LocalUseCase
+import com.kmp.ollamechat.domain.usecase.LocalDbUseCase
 import com.kmp.ollamechat.domain.usecase.StreamUseCase
 import com.kmp.ollamechat.util.ChatImageStorage
 import com.kmp.ollamechat.util.Logger
@@ -38,7 +38,7 @@ import org.jetbrains.compose.resources.getString
 
 class ChatViewModel(
     private val streamUseCase: StreamUseCase,
-    private val localUseCase: LocalUseCase,
+    private val localDbUseCase: LocalDbUseCase,
     private val chatImageStorage: ChatImageStorage,
     private val messageUpdateStrategy: MessageUpdateStrategy,
     private val textSpeaker: TextSpeaker,
@@ -49,7 +49,7 @@ class ChatViewModel(
     private val _isSpeaking = MutableStateFlow(false)
     private var streamJob: Job? = null
 
-    private val dbMessagesFlow: Flow<List<ChatMessageUi>> = localUseCase.observeMessages()
+    private val dbMessagesFlow: Flow<List<ChatMessageUi>> = localDbUseCase.observeMessages()
         .map { db ->
             db.map { item ->
                 ChatMessageUi(
@@ -96,12 +96,12 @@ class ChatViewModel(
 
             val imageName = file?.let { chatImageStorage.saveImage(it.readBytes()) }
 
-            localUseCase.insertUserMessage(
+            localDbUseCase.insertUserMessage(
                 content = prompt,
                 imagePath = if (imageName.isNullOrEmpty()) emptyList() else listOf(imageName)
             )
 
-            val assistantMessageId = localUseCase.insertAssistantMessage(
+            val assistantMessageId = localDbUseCase.insertAssistantMessage(
                 content = ""
             )
 
@@ -144,7 +144,7 @@ class ChatViewModel(
                     }
 
                     is StreamOllamaEvent.Error -> {
-                        localUseCase.insertSystemMessage(
+                        localDbUseCase.insertSystemMessage(
                             content = "Ошибка: ${event.message}"
                         )
                         Logger.d(event.message)

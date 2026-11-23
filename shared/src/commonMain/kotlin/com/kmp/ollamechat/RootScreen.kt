@@ -52,7 +52,11 @@ fun RootScreen() {
                         viewModel = vm,
                         onChatRoute = {
                             backStack.add(ChatRoute)
+                        },
+                        onSettings = {
+                            backStack.add(SettingsRoute)
                         }
+
                     )
                 }
 
@@ -80,7 +84,6 @@ fun RootScreen() {
         )
     }
 }
-
 //@Composable
 //@Preview
 //fun RootScreenPreview() {

@@ -1,10 +1,8 @@
 package com.kmp.ollamechat.chat
 
-import com.kmp.ollamechat.common.AiModelsSettings
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
-import com.kmp.ollamechat.domain.usecase.LocalUseCase
-import com.kmp.ollamechat.network.client.ServerSettings
+import com.kmp.ollamechat.domain.usecase.LocalDbUseCase
 import com.kmp.ollamechat.network.datasource.model.ChatMessageDto
 import com.kmp.ollamechat.storages.settings.Settings
 import kotlinx.coroutines.NonCancellable
@@ -15,7 +13,7 @@ import kotlin.time.TimeSource
 
 // Not real Strategy pattern
 class MessageUpdateStrategy(
-    private val localUseCase: LocalUseCase,
+    private val localDbUseCase: LocalDbUseCase,
     private val settings: Settings
 ) {
 
@@ -92,7 +90,7 @@ class MessageUpdateStrategy(
         thinkingBuilder: StringBuilder,
         contentBuilder: StringBuilder
     ) {
-        localUseCase.updateMessage(
+        localDbUseCase.updateMessage(
             OllamaMessage(
                 id = id,
                 role = ChatRole.ASSISTANT,

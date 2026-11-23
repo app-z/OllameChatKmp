@@ -1,6 +1,7 @@
 package com.kmp.ollamechat.network.di
 
 import com.kmp.ollamechat.domain.datasource.RemoteStreamDataSource
+import com.kmp.ollamechat.network.client.OllamaModelClient
 import com.kmp.ollamechat.network.client.ServerSettings
 import com.kmp.ollamechat.network.client.StreamOllamaClient
 import com.kmp.ollamechat.network.datasource.RemoteStreamDataSourceImpl
@@ -46,10 +47,12 @@ val networkModule = module {
             get(),
             get(),
             get(),
+            get(),
             get()
         )
     }
 
     single<StreamOllamaClient> { StreamOllamaClient(get(), get()) }
 
+    single<OllamaModelClient> { OllamaModelClient(get()) }
 }
