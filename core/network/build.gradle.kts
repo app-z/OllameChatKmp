@@ -28,7 +28,6 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.timber)
 
-                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.core)
 
                 // Move Model to separate module!

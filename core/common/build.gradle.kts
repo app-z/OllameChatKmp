@@ -18,21 +18,15 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-
-        sourceSets {
-            commonMain.dependencies {
-
-                implementation(libs.koin.core)
-                implementation(libs.timber)
-
-                implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.kotlinx.serialization.core)
-
-            }
-            androidMain.dependencies {
-            }
-            iosMain.dependencies {
-            }
+        commonMain.dependencies {
+            implementation(libs.koin.core)
+            implementation(libs.timber)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.kotlinx.serialization.core)
+        }
+        androidMain.dependencies {
+        }
+        iosMain.dependencies {
         }
     }
 }
