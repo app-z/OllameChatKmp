@@ -11,5 +11,5 @@ interface LocalModelDataSource {
 
     fun observeModelList(): Flow<List<OllamaModel>>
 
-    suspend fun selectedModel(modelName: String)
+    suspend fun selectModel(modelName: String)
 }

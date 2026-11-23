@@ -1,5 +1,6 @@
 package com.kmp.ollamechat.chat
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageUi
@@ -46,6 +47,9 @@ class ChatViewModel(
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
 
+    private val _titleFlow = MutableStateFlow("Chat")
+    val titleFlow = _titleFlow.asStateFlow()
+
     private val _isSpeaking = MutableStateFlow(false)
     private var streamJob: Job? = null
 
@@ -83,6 +87,15 @@ class ChatViewModel(
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = emptyList()
     )
+
+    init {
+        viewModelScope.launch {
+            val selectedModel = localDbUseCase.getModelList().firstOrNull { it.isSelected }
+            selectedModel?.let { model ->
+                _titleFlow.emit(model.name)
+            }
+        }
+    }
 
     fun send(text: String, file: PlatformFile?) {
 

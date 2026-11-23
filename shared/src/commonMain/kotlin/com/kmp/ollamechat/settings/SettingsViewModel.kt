@@ -31,7 +31,7 @@ class SettingsViewModel(
                 _ollamaModelsTagFlow.emit(UiState.Success(ollamaModels))
 
                 if (ollamaModels.isNotEmpty() && !ollamaModels.any { it.isSelected }) {
-                    localDbUseCase.selectedModel(ollamaModels.first().name)
+                    localDbUseCase.selectModel(ollamaModels.first().name)
                 }
             }
         }
@@ -55,7 +55,7 @@ class SettingsViewModel(
     fun onModelUpdateClick(model: OllamaModel) {
         Logger.d(model.model)
         viewModelScope.launch {
-            localDbUseCase.selectedModel(model.model)
+            localDbUseCase.selectModel(model.model)
         }
     }
 }

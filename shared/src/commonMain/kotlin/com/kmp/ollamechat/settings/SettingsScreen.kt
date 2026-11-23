@@ -1,6 +1,10 @@
 package com.kmp.ollamechat.settings
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,9 +37,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,12 +56,28 @@ fun SettingsScreen(
     onBack: () -> Unit
 ) {
 
-    val ollamaModelsState by viewModel.ollamaModelsTagFlow.collectAsStateWithLifecycle()
+    val state by viewModel.ollamaModelsTagFlow.collectAsStateWithLifecycle()
 
     val listState = rememberLazyListState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val unknownError = stringResource(Res.string.unknown_error)
+
+    LaunchedEffect(state) {
+        val errorState = state as? UiState.Error ?: return@LaunchedEffect
+        snackbarHostState.showSnackbar(
+            message = errorState.ex.message ?: unknownError,
+            duration = SnackbarDuration.Long
+        )
+    }
+
+    LaunchedEffect(state) {
+        if (state is UiState.Loading) {
+            listState.scrollToItem(0)
+        }
+    }
+ 
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,25 +117,32 @@ fun SettingsScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
 
-            when (ollamaModelsState) {
+            when (state) {
                 UiState.Loading -> {
                     ProgressIndicator()
                 }
 
                 is UiState.Error -> {
-                    val error = (ollamaModelsState as UiState.Error).ex.message
-                        ?: stringResource(Res.string.unknown_error)
-                    LaunchedEffect(error) {
-                        snackbarHostState.showSnackbar(
-                            message = error,
-                            duration = SnackbarDuration.Long
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = (state as UiState.Error).ex.message ?: unknownError,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error
                         )
+                        Spacer(Modifier.padding(8.dp))
+                        Button(onClick = { viewModel.requestOllamaModels() }) {
+                            Text(stringResource(Res.string.update_models))
+                        }
                     }
                 }
 
                 is UiState.Success -> {
                     ModelListScreen(
-                        (ollamaModelsState as UiState.Success).ollamaModel,
+                        (state as UiState.Success).ollamaModel,
                         listState,
                         onModelClick = { model ->
                             viewModel.onModelUpdateClick(model)
@@ -125,6 +150,7 @@ fun SettingsScreen(
                 }
             }
         }
+
     }
 }
 
@@ -135,40 +161,56 @@ fun ModelListScreen(
     onModelClick: (model: OllamaModel) -> Unit
 ) {
 
-//    var checked by remember { mutableStateOf(false) }
-
     LazyColumn(
         modifier = Modifier.padding(12.dp),
-        listState
+        state = listState
     ) {
         items(
             items = itemsModels,
             key = { model -> model.name }
         ) { model ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onModelClick.invoke(model) }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = model.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
+            ModelItem(
+                model = model,
+                modifier = Modifier.animateItem(
+                    fadeInSpec = tween(300),
+                    placementSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                ),
+                onModelClick = { onModelClick(model) }
+            )
 
-                Spacer(Modifier.width(12.dp))
-
-                Checkbox(
-                    checked = model.isSelected,
-                    onCheckedChange = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
         }
+    }
+}
+
+
+@Composable
+fun ModelItem(
+    modifier: Modifier,
+    model: OllamaModel,
+    onModelClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onModelClick.invoke() }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = model.name,
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+
+        Spacer(Modifier.width(12.dp))
+
+        Checkbox(
+            checked = model.isSelected,
+            onCheckedChange = null,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }
 

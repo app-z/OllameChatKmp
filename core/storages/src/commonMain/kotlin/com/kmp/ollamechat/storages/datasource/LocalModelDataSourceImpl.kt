@@ -24,7 +24,7 @@ class LocalModelDataSourceImpl(
         modelsEntities -> modelsEntities.toDomain()
     }
 
-    override suspend fun selectedModel(modelName: String) {
+    override suspend fun selectModel(modelName: String) {
         modelDao.selectExclusive(modelName)
     }
 

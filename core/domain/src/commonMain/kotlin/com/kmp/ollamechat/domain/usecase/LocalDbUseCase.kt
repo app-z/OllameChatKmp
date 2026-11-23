@@ -77,8 +77,8 @@ class LocalDbUseCase(
     fun observeModelList(): Flow<List<OllamaModel>> =
         localModelDataSource.observeModelList().flowOn(dispatchers.io)
 
-    suspend fun selectedModel(modelName: String) = withContext(dispatchers.io) {
-        localModelDataSource.selectedModel(modelName)
+    suspend fun selectModel(modelName: String) = withContext(dispatchers.io) {
+        localModelDataSource.selectModel(modelName)
     }
 
 }
