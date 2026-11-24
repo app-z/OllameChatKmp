@@ -1,7 +1,6 @@
 package com.kmp.ollamechat.storages.datasource
 
-import com.kmp.ollamechat.common.AppDispatchers
-import com.kmp.ollamechat.domain.datasource.LocalChatDataSource
+import com.kmp.ollamechat.domain.datasource.ChatRepository
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import com.kmp.ollamechat.storages.database.MessagesDao
@@ -11,9 +10,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class LocalChatDataSourceImpl(
+class ChatDataSource(
     private val messagesDao: MessagesDao
-) : LocalChatDataSource {
+) : ChatRepository {
     override suspend fun getMessages(): List<OllamaMessage> {
         return messagesDao.getAllMessages().first().map { it.toChatMessage() }
     }

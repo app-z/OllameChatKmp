@@ -41,13 +41,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kmp.ollamechat.domain.model.OllamaModel
 import ollamechat.shared.generated.resources.Res
+import ollamechat.shared.generated.resources.models
 import ollamechat.shared.generated.resources.settings
 import ollamechat.shared.generated.resources.unknown_error
 import ollamechat.shared.generated.resources.update_models
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -77,7 +80,7 @@ fun SettingsScreen(
             listState.scrollToItem(0)
         }
     }
- 
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -161,23 +164,28 @@ fun ModelListScreen(
     onModelClick: (model: OllamaModel) -> Unit
 ) {
 
-    LazyColumn(
-        modifier = Modifier.padding(12.dp),
-        state = listState
-    ) {
-        items(
-            items = itemsModels,
-            key = { model -> model.name }
-        ) { model ->
-            ModelItem(
-                model = model,
-                modifier = Modifier.animateItem(
-                    fadeInSpec = tween(300),
-                    placementSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                ),
-                onModelClick = { onModelClick(model) }
-            )
+    Column {
+        Text(modifier = Modifier.padding(start = 24.dp, top = 12.dp), text = stringResource(Res.string.models))
 
+        LazyColumn(
+            modifier = Modifier.padding(12.dp),
+            state = listState
+        ) {
+            items(
+                items = itemsModels,
+                key = { model -> model.name }
+            ) { model ->
+                // ??? habr.com/ru/companies/otus/articles/1049282/
+                val onClick = remember(model, onModelClick) { { onModelClick(model) } }
+                ModelItem(
+                    model = model,
+                    modifier = Modifier.animateItem(
+                        fadeInSpec = tween(300),
+                        placementSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    ),
+                    onModelClick = onClick
+                )
+            }
         }
     }
 }
@@ -222,4 +230,35 @@ fun ProgressIndicator() {
     ) {
         CircularProgressIndicator()
     }
+}
+
+@Composable
+@Preview
+fun ModelListScreenPreview() {
+    val listState = rememberLazyListState()
+
+    ModelListScreen(
+        itemsModels = listOf(
+            OllamaModel(
+            name = "ddfsfs",
+            model = "m1",
+            size = 100,
+            digest = "ddd",
+            modifiedAt = "",
+            isSelected = false
+        ),
+            OllamaModel(
+                name = "ddfsfs1",
+                model = "m2",
+                size = 1000,
+                digest = "aaa",
+                modifiedAt = "",
+                isSelected = true
+
+        )),
+        listState = listState,
+        onModelClick = { _ ->
+
+        }
+    )
 }

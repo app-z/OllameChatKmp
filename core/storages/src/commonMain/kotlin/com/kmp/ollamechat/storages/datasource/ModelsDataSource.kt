@@ -1,6 +1,6 @@
 package com.kmp.ollamechat.storages.datasource
 
-import com.kmp.ollamechat.domain.datasource.LocalModelDataSource
+import com.kmp.ollamechat.domain.datasource.ModelsRepository
 import com.kmp.ollamechat.domain.model.OllamaModel
 import com.kmp.ollamechat.storages.database.ModelDao
 import com.kmp.ollamechat.storages.database.toDomain
@@ -8,9 +8,9 @@ import com.kmp.ollamechat.storages.database.toEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class LocalModelDataSourceImpl(
+class ModelsDataSource(
     private val modelDao: ModelDao,
-) : LocalModelDataSource {
+) : ModelsRepository {
     override suspend fun getModelList(): List<OllamaModel> {
         val modelsEntry =  modelDao.getModels()
         return modelsEntry.toDomain()

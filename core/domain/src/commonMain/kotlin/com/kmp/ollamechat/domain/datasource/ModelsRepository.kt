@@ -3,7 +3,7 @@ package com.kmp.ollamechat.domain.datasource
 import com.kmp.ollamechat.domain.model.OllamaModel
 import kotlinx.coroutines.flow.Flow
 
-interface LocalModelDataSource {
+interface ModelsRepository {
 
     suspend fun getModelList(): List<OllamaModel>
 

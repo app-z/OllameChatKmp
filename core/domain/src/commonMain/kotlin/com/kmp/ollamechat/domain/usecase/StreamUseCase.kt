@@ -1,13 +1,13 @@
 package com.kmp.ollamechat.domain.usecase
 
-import com.kmp.ollamechat.domain.datasource.RemoteStreamDataSource
+import com.kmp.ollamechat.domain.datasource.OllamaRepository
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import com.kmp.ollamechat.domain.model.StreamOllamaEvent
 import kotlinx.coroutines.flow.Flow
 import kotlin.io.encoding.Base64
 
-class StreamUseCase(val remoteStreamDataSource: RemoteStreamDataSource) {
+class StreamUseCase(val ollamaRepository: OllamaRepository) {
 
     fun sendPrompt(
         role: ChatRole,
@@ -18,7 +18,7 @@ class StreamUseCase(val remoteStreamDataSource: RemoteStreamDataSource) {
 
         val base64Image = imageBytes?.let { Base64.encode(it) }
 
-        return remoteStreamDataSource.sendPrompt(
+        return ollamaRepository.sendPrompt(
             modelName = modelName,
             ollamaMessages = listOf(
                 OllamaMessage(

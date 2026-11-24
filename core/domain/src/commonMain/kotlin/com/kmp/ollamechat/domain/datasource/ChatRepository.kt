@@ -4,7 +4,7 @@ import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import kotlinx.coroutines.flow.Flow
 
-interface LocalChatDataSource {
+interface ChatRepository {
     suspend fun updateMessage(chatMessage: OllamaMessage)
 
     suspend fun getMessages(): List<OllamaMessage>

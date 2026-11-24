@@ -1,17 +1,17 @@
 package com.kmp.ollamechat.storages.di
 
-import com.kmp.ollamechat.domain.datasource.LocalChatDataSource
-import com.kmp.ollamechat.domain.datasource.LocalModelDataSource
-import com.kmp.ollamechat.storages.datasource.LocalChatDataSourceImpl
-import com.kmp.ollamechat.storages.datasource.LocalModelDataSourceImpl
+import com.kmp.ollamechat.domain.datasource.ChatRepository
+import com.kmp.ollamechat.domain.datasource.ModelsRepository
+import com.kmp.ollamechat.storages.datasource.ChatDataSource
+import com.kmp.ollamechat.storages.datasource.ModelsDataSource
 import com.kmp.ollamechat.storages.settings.Settings
 import org.koin.dsl.module
 
 val storageModule = module {
 
-    single<LocalChatDataSource> { LocalChatDataSourceImpl(get()) }
+    single<ChatRepository> { ChatDataSource(get()) }
 
-    single<LocalModelDataSource> { LocalModelDataSourceImpl(get()) }
+    single<ModelsRepository> { ModelsDataSource(get()) }
 
     single <Settings> { Settings() }
 }

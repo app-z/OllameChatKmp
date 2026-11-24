@@ -1,8 +1,7 @@
 package com.kmp.ollamechat.network.datasource
 
-import com.kmp.ollamechat.common.AiModelsSettings
 import com.kmp.ollamechat.common.AppDispatchers
-import com.kmp.ollamechat.domain.datasource.RemoteStreamDataSource
+import com.kmp.ollamechat.domain.datasource.OllamaRepository
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import com.kmp.ollamechat.domain.model.OllamaModel
 import com.kmp.ollamechat.domain.model.StreamOllamaEvent
@@ -14,12 +13,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
-class RemoteStreamDataSourceImpl(
+class OllamaDataSource(
     private val streamOllamaClient: StreamOllamaClient,
     private val ollamaModelClient: OllamaModelClient,
     private val serverSettings: ServerSettings,
     private val dispatchers: AppDispatchers
-) : RemoteStreamDataSource {
+) : OllamaRepository {
     override fun sendPrompt(ollamaMessages: List<OllamaMessage>, modelName: String): Flow<StreamOllamaEvent> {
             return streamOllamaClient.streamChat(
                 serverUrl = serverSettings.getServerUrl(),
