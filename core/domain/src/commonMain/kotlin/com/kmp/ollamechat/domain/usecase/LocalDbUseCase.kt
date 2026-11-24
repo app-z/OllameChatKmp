@@ -81,4 +81,5 @@ class LocalDbUseCase(
         localModelDataSource.selectModel(modelName)
     }
 
+    suspend fun getSelectedModel() = localModelDataSource.getModelList().firstOrNull { it.isSelected }
 }

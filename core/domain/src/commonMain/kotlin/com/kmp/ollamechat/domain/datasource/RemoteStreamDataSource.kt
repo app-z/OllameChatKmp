@@ -6,7 +6,7 @@ import com.kmp.ollamechat.domain.model.StreamOllamaEvent
 import kotlinx.coroutines.flow.Flow
 
 interface RemoteStreamDataSource {
-    fun sendPrompt(ollamaMessages: List<OllamaMessage>): Flow<StreamOllamaEvent>
+    fun sendPrompt(ollamaMessages: List<OllamaMessage>, modelName: String): Flow<StreamOllamaEvent>
 
     suspend fun getModels(): Result<List<OllamaModel>>
 }

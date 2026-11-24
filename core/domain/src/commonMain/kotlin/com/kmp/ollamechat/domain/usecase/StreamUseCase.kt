@@ -12,13 +12,15 @@ class StreamUseCase(val remoteStreamDataSource: RemoteStreamDataSource) {
     fun sendPrompt(
         role: ChatRole,
         content: String,
-        imageBytes: ByteArray?
+        imageBytes: ByteArray?,
+        modelName: String
     ): Flow<StreamOllamaEvent> {
 
         val base64Image = imageBytes?.let { Base64.encode(it) }
 
         return remoteStreamDataSource.sendPrompt(
-            listOf(
+            modelName = modelName,
+            ollamaMessages = listOf(
                 OllamaMessage(
                     role = role,
                     content = content,

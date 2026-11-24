@@ -47,7 +47,6 @@ val networkModule = module {
             get(),
             get(),
             get(),
-            get(),
             get()
         )
     }

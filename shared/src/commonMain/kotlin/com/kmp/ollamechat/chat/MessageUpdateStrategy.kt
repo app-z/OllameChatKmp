@@ -3,7 +3,6 @@ package com.kmp.ollamechat.chat
 import com.kmp.ollamechat.domain.model.ChatRole
 import com.kmp.ollamechat.domain.model.OllamaMessage
 import com.kmp.ollamechat.domain.usecase.LocalDbUseCase
-import com.kmp.ollamechat.network.datasource.model.ChatMessageDto
 import com.kmp.ollamechat.storages.settings.Settings
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +21,7 @@ class MessageUpdateStrategy(
     private val timeSource = TimeSource.Monotonic
     private var lastSaveMark = timeSource.markNow()
 
-    private val _currentMessage = MutableStateFlow<ChatMessageDto?>(null)
+    private val _currentMessage = MutableStateFlow<OllamaMessage?>(null)
     val currentMessage = _currentMessage.asStateFlow()
 
     val thinkingBuilder = StringBuilder()
@@ -57,7 +56,7 @@ class MessageUpdateStrategy(
 
             StrategyType.AS_FLOW -> {
                 _currentMessage.emit(
-                    ChatMessageDto(
+                    OllamaMessage(
                         id = messageId,
                         role = ChatRole.ASSISTANT,
                         thinking = thinkingBuilder.toString().ifEmpty { null },

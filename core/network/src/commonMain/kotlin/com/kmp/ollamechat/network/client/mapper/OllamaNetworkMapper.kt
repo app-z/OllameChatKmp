@@ -6,13 +6,12 @@ import com.kmp.ollamechat.network.client.model.OllamaModelDto
 import com.kmp.ollamechat.network.datasource.model.ChatMessageDto
 
 
-internal fun OllamaMessage.toChatMessageDto(base64Image: String? = null): ChatMessageDto {
+internal fun OllamaMessage.toChatMessageDto(): ChatMessageDto {
     return ChatMessageDto(
-        id = id,
         role = role, // "user", "assistant", "system"
         content = content,
         thinking = thinking,
-        imagePath = base64Image
+        imagePath = images
     )
 }
 

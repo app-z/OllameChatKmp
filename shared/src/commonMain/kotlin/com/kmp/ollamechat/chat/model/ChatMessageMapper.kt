@@ -1,8 +1,8 @@
 package com.kmp.ollamechat.chat.model
 
-import com.kmp.ollamechat.network.datasource.model.ChatMessageDto
+import com.kmp.ollamechat.domain.model.OllamaMessage
 
-fun ChatMessageDto.toChatMessageUi(): ChatMessageUi {
+fun OllamaMessage.toChatMessageUi(): ChatMessageUi {
     return ChatMessageUi(
         id = id,
         role = role,

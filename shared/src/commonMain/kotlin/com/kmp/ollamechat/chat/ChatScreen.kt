@@ -16,9 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kmp.ollamechat.chat.model.ChatMessageUi
 import com.kmp.ollamechat.domain.model.ChatRole
-import ollamechat.shared.generated.resources.Res
-import ollamechat.shared.generated.resources.chat
-import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ChatScreen(
@@ -26,11 +23,11 @@ fun ChatScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    
+
     // TODO: Make one state
     val isStreaming by viewModel.isStreaming.collectAsStateWithLifecycle()
     val messages by viewModel.messagesFlow.collectAsStateWithLifecycle()
-    val title by viewModel.titleFlow.collectAsStateWithLifecycle()
+    val title by viewModel.modelNameFlow.collectAsStateWithLifecycle()
 
 
     Scaffold(

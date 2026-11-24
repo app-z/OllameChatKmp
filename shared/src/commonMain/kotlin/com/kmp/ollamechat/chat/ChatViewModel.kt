@@ -1,6 +1,5 @@
 package com.kmp.ollamechat.chat
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kmp.ollamechat.chat.model.ChatMessageUi
@@ -47,8 +46,8 @@ class ChatViewModel(
     private val _isStreaming = MutableStateFlow(false)
     val isStreaming: StateFlow<Boolean> = _isStreaming.asStateFlow()
 
-    private val _titleFlow = MutableStateFlow("Chat")
-    val titleFlow = _titleFlow.asStateFlow()
+    private val _modelNameFlow = MutableStateFlow("Chat")
+    val modelNameFlow = _modelNameFlow.asStateFlow()
 
     private val _isSpeaking = MutableStateFlow(false)
     private var streamJob: Job? = null
@@ -78,7 +77,7 @@ class ChatViewModel(
             dbUi
         } else {
             val currentUi = current.toChatMessageUi().copy(
-                imageFile = chatImageStorage.getImageFile(current.imagePath)
+                imageFile = chatImageStorage.getImageFile(current.images?.firstOrNull())
             )
             dbUi.filterNot { it.id == currentUi.id } + currentUi
         }
@@ -90,9 +89,8 @@ class ChatViewModel(
 
     init {
         viewModelScope.launch {
-            val selectedModel = localDbUseCase.getModelList().firstOrNull { it.isSelected }
-            selectedModel?.let { model ->
-                _titleFlow.emit(model.name)
+           localDbUseCase.getSelectedModel()?.let { model ->
+                _modelNameFlow.emit(model.name)
             }
         }
     }
@@ -137,6 +135,7 @@ class ChatViewModel(
             streamUseCase.sendPrompt(
                 role = ChatRole.USER,
                 content = prompt,
+                modelName = modelNameFlow.value,
                 imageBytes = file?.prepareImageForOllama()
             ).collect { event ->
                 when (event) {

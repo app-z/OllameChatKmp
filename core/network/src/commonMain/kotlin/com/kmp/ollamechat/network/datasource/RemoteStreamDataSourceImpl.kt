@@ -17,15 +17,14 @@ import kotlinx.coroutines.withContext
 class RemoteStreamDataSourceImpl(
     private val streamOllamaClient: StreamOllamaClient,
     private val ollamaModelClient: OllamaModelClient,
-    private val aiModelsSettings: AiModelsSettings,
     private val serverSettings: ServerSettings,
     private val dispatchers: AppDispatchers
 ) : RemoteStreamDataSource {
-    override fun sendPrompt(ollamaMessages: List<OllamaMessage>): Flow<StreamOllamaEvent> {
+    override fun sendPrompt(ollamaMessages: List<OllamaMessage>, modelName: String): Flow<StreamOllamaEvent> {
             return streamOllamaClient.streamChat(
                 serverUrl = serverSettings.getServerUrl(),
                 ollamaMessages = ollamaMessages,
-                modelId = aiModelsSettings.getCurrentModel().id
+                modelId = modelName
             ).flowOn(dispatchers.io)
     }
 
